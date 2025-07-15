@@ -13,9 +13,9 @@ const userRoute = require("../Model/userRoute.js");
 
 async function handlePostOfferInDatabase(req, res) {
   const { startLocation, endLocation, date, time } = req.body;
-  const token = req.cookies.token;
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const driverId = decoded.userid;
+
+  const driverId = req.user.userId;
+  console.log("The drivers id >>>>>>>  ",driverId);
 
   try {
     console.log("Starting coordinate lookup...");
@@ -69,7 +69,7 @@ async function handlePostOfferInDatabase(req, res) {
           distance: routeDetails.routes[0].legs[0].readable_distance,
           time: routeDetails.routes[0].legs[0].readable_duration,
           routePath: decodedPolyline,
-          matchedRides: [],
+          matchedUsers: [],
         });
         if (!created) {
           console.log("Failed to create route");
@@ -95,9 +95,6 @@ async function handlePostOfferInDatabase(req, res) {
 
 async function handlePostMatchRidesInDatabase(req, res) {
   const {
-    userId,
-    name,
-    mobileNumber,
     startLocation,
     endLocation,
     rideId,
@@ -106,16 +103,17 @@ async function handlePostMatchRidesInDatabase(req, res) {
     time,
   } = req.body;
   console.log({
-    userId,
-    name,
-    mobileNumber,
     startLocation,
     endLocation,
     rideId,
     date,
     time,
   });
-  // const user = await user.
+
+  const userId = req.user.userId;
+  console.log("User id>> ",userId);
+  const User = await user.findById(userId);
+
   
   const routeDetails = await route.findById(rideId);
   const driverDetails = await driver.findById(routeDetails.driverId);
@@ -137,13 +135,13 @@ async function handlePostMatchRidesInDatabase(req, res) {
       const ride = await route.findByIdAndUpdate(
         rideId,
         {
-          $set: { status: "matched" }, // Update the ride status to "matched"
+          $set: { status: "pending" }, // Update the ride status to "matched"
           $push: {
             matchedUsers: {
               userId: userId,
               userRouteId: userRides._id,
-              name: name,
-              contactNumber: mobileNumber,
+              name: User.name,
+              contactNumber: User.mobileNumber,
               startLocation: startLocation,
               endLocation: endLocation,
               status: "requested",
@@ -169,9 +167,82 @@ console.log("matched user: ",ride);
     });
 }
 
+async function handleGetRideDetails(req, res) {
+  try {
+    const driverId = req.user.userId;
+
+    console.log("driver  ",driverId);
+
+    // Get all rides created by this driver
+    const driverRides = await route.find({driverId : driverId}).lean();
+    console.log("All Rides: ",driverRides);
+    const rideDetails = await Promise.all(
+      driverRides.map(async (ride) => {
+        let completedUser = null;
+
+        // If ride is completed, fetch the user who completed it
+        if (ride.status === "completed") {
+          completedUser = await userRoute.findOne({
+            rideId: ride._id,
+            status: "completed",
+          }).lean();
+
+          if (completedUser) {
+            return {
+              rideId: ride._id,
+              status: ride.status,
+              date: ride.date,
+              time: ride.rideStartTime,
+              from: ride.source,
+              to: ride.destination,
+              completedUser: {
+                name: completedUser.driverName,
+                contact: completedUser.contactNumber,
+                start: completedUser.startLocation,
+                end: completedUser.endLocation,
+                cost: completedUser.rideCost,
+              },
+            };
+          }
+        }
+
+        // If not completed, return matchedUsers (those who requested/booked)
+        const matchedUsers = (ride.matchedUsers || []).map((user) => ({
+          name: user.name,
+          contact: user.contactNumber,
+          status: user.status,
+          start: user.startLocation,
+          end: user.endLocation,
+          cost: user.rideCost,
+          date: user.date,
+          time: user.time,
+        }));
+
+        return {
+          rideId: ride._id,
+          status: ride.status,
+          date: ride.date,
+          time: ride.rideStartTime,
+          from: ride.source,
+          to: ride.destination,
+          matchedUsers,
+        };
+      })
+    );
+
+    console.log(rideDetails);
+    res.status(200).json({ rides: rideDetails });
+  } catch (err) {
+    console.error("Error fetching driver rides:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+}
+
+
+
 async function handleGetMatchedRidesInDatabase(req, res) {
   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.body.userid;
+  const driverId = req.user.userId;
   // console.log(driverId);
   const rideDetails = await route.find({ driverId: driverId });
   //  console.log(rideDetails);
@@ -196,7 +267,7 @@ async function handleGetMatchedRidesInDatabase(req, res) {
 
 async function handleGetAcceptedRidesInDatabase(req, res) {
   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.body.userid;
+  const driverId = req.user.userid;
   // console.log(driverId);
   const rideDetails = await route.find({ driverId: driverId });
   //  console.log(rideDetails);
@@ -223,7 +294,7 @@ async function handleGetAcceptedRidesInDatabase(req, res) {
 
 async function handleGetDeclinedRidesInDatabase(req, res) {
   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.body.userid;
+  const driverId = req.user.userId;
   console.log(driverId);
   const rideDetails = await route.find({ driverId: driverId });
    console.log(rideDetails);
@@ -249,7 +320,7 @@ async function handleGetDeclinedRidesInDatabase(req, res) {
 
 async function handleGetCompletedRidesInDatabase(req, res) {
   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.body.userid;
+  const driverId = req.user.userId;
   console.log(driverId);
   const rideDetails = await route.find({ driverId: driverId });
    console.log(rideDetails);
@@ -279,89 +350,5 @@ module.exports = {
   handleGetMatchedRidesInDatabase,
   handleGetAcceptedRidesInDatabase,
   handleGetDeclinedRidesInDatabase,
+  handleGetRideDetails,
 };
-
-// async function helper(){
-//   const startLocation = "Katraj Chowk, Santosh Nagar, Ambegaon Bk, Pune, Maharashtra, 411046, India";
-//   const endLocation = "Bhosari Bus Terminal, Bhosari, Pimpri-Chinchwad, Haveli, Pune, Maharashtra, 411026, India";
-//   const decodedPolyline = [
-//     { lat: 18.449779, lng: 73.850952 },
-//     { lat: 18.449774, lng: 73.851127 },
-//     { lat: 18.449757, lng: 73.851358 },
-//     { lat: 18.450147, lng: 73.851308 }];
-//   console.log("Decoded polyline:", decodedPolyline);
-//   const created = await route.create({
-//     driverId: '67dfb69c26cf25f0e7ca50af',
-//     source: startLocation,
-//     destination: endLocation,
-//     date: '2025-03-07',
-//     rideStartTime : '11:47',
-//     status : "available",
-//     distance : "45",
-//     time : "65",
-//     routePath : decodedPolyline
-//   })
-//   console.log(created);
-// }
-
-// helper();
-
-// handlePostOfferInDatabase();
-
-// return res.status(200).json({msg:"success"});
-//
-// try {
-//
-//   if (!token) {
-//     return res.status(401).json({ msg: "No token found" });
-//   }
-
-//
-
-//   // console.log("Received data:", { startLocation, endLocation, date, time, driverId });
-
-//   const startLocation = "Katraj Chowk, Santosh Nagar, Ambegaon Bk, Pune, Maharashtra, 411046, India";
-//   const endLocation = "Bhosari Bus Terminal, Bhosari, Pimpri-Chinchwad, Haveli, Pune, Maharashtra, 411026, India";
-//   getCoords(startLocation,endLocation).then((coordinates)=>{console.log(coordinates)});
-
-// Get start location coordinates
-// let startgeocode = await getCoords(startLocation);
-// if (!startgeocode) {
-//   return res.status(400).json({ msg: "Could not geocode start location. Please check the address and try again." });
-// }
-// console.log("Start location geocode:", startgeocode);
-
-// // Get end location coordinates
-// let endgeocode = await getCoords(endLocation);
-// if (!endgeocode) {
-//   return res.status(400).json({ msg: "Could not geocode end location. Please check the address and try again." });
-// }
-// console.log("End location geocode:", endgeocode);
-
-// getCoords('Katraj Chowk, Santosh Nagar, Ambegaon Bk, Pune, Maharashtra, 411046, India','Bhosari Bus Terminal, Bhosari, Pimpri-Chinchwad, Haveli, Pune, Maharashtra, 411026, India').then((coordinates)=>{console.log(coordinates)});
-// helper();
-// // Get route details
-// const start = `${startgeocode.lat},${startgeocode.lng}`;
-// const end = `${endgeocode.lat},${endgeocode.lng}`;
-
-// try {
-//   const routeDetail = await getOptimizedRoute(start, end);
-//   console.log("Route details:", routeDetail);
-
-//   // TODO: Save offer to database here
-
-//   return res.status(200).json({
-//     msg: "success",
-//     route: routeDetail
-//   });
-// } catch (error) {
-//   console.log("Error in getting route details ", error);
-//   return res.status(500).json({ msg: "Error getting route details" });
-// }
-
-//   } catch (error) {
-//     console.error("Error in handlePostOfferInDatabase:", error);
-//     return res.status(500).json({ msg: "Server error", error: error.message });
-//   }
-// }
-// }

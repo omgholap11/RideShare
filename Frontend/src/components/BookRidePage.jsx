@@ -86,6 +86,13 @@ const BookRidePage = () => {
       const data = await response.json();
       // Navigate to search results page with the received data
       console.log(data.rides);
+      console.log('Navigation Data:', {
+      rides: data.rides,
+      userStartLocation: formData.startLocation,
+      userEndLocation: formData.endLocation,
+      date: formData.date,
+      time: formData.time
+    });
       navigate("/rideresults", { state: { rides: data.rides  , userStartLocation : formData.startLocation , userEndLocation : formData.endLocation , date : formData.date , time : formData.time} });
     } catch (error) {
       console.error("Error searching rides:", error);

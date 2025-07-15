@@ -237,7 +237,7 @@ function Navbar() {
 
   const fetchUserRole = async () => {
     try {
-      const response = await fetch("http://localhost:5001/user/get-token", {
+      const response = await fetch("http://localhost:5001/gettokendetails/get-token", {
         method: "GET",
         credentials: "include",
       });
@@ -248,7 +248,9 @@ function Navbar() {
       }
 
       const data = await response.json();
+      console.log("--->>" , data);
       return { role: data.role, userid: data.userid };
+
     } catch (error) {
       console.error("Error fetching user role:", error);
       return { role: null, userid: null };
@@ -258,6 +260,7 @@ function Navbar() {
   useEffect(() => {
     const checkUserRole = async () => {
       const { role, userid } = await fetchUserRole();
+      console.log(role ," -- ", userid);
       setRole(role);
       setUserid(userid);
     };
@@ -267,30 +270,9 @@ function Navbar() {
   const navigateToUserProfile = () => navigate("/profile");
   const navigateAboutUs = () => navigate("/aboutus");
   const navigateContactUs = () => navigate("/contactus");
-  const navigateToRequestedRides = async()=>{
-        const {userid} = await fetchUserRole();
-            console.log(userid);
-            try{
-              const response = await fetch("http://localhost:5001/offer/getrequestedrides",
-               { method : "POST",
-                headers: { "Content-Type": "application/json" },
-                 body : JSON.stringify({userid}),
-               });
-
-               if(!response.ok)
-               {
-                  console.log("Error while getting user details from Backend!!");
-               }
-
-               const data = await response.json();
-               console.log(data);
-               navigate("/requestedrides" , {state : {matchedUserRoutes  : data.matchedUserRoutes , matchedDriverRouteId : data.matchedDriverRouteId}});
-            }
-            catch(error)
-            {
-              console.log("Error while getting user info!!",error);
-            }
-          }
+  const navigateToRideDetails = ()=>{
+    navigate("/requestedrides");
+  }
   const navigateToUserNotification = async () => {
     const { userid } = await fetchUserRole();
     console.log(userid);
@@ -350,7 +332,6 @@ function Navbar() {
   const navigateToSafety = () => navigate("/safety");
   const navigateToRideHistory = () => navigate("/");
   const navigateToReferrals = () => navigate("/");
-  const navigateToSettings = () => navigate("/");
   const navigateToFeedback = () => navigate("/");
 
   return (
@@ -458,7 +439,7 @@ function Navbar() {
           {/* User-specific UI */}
           {role === "driver" && (
             <div className="flex items-center space-x-4">
-              <div className="relative">
+              {/* <div className="relative">
                 <button
                   onClick={navigateToRequestedRides}
                   className="relative p-2 rounded-full hover:bg-indigo-50 transition-colors duration-300 group"
@@ -466,7 +447,7 @@ function Navbar() {
                   <Bell className="w-6 h-6 text-slate-600 group-hover:text-indigo-600 transition-colors" />
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
                 </button>
-              </div>
+              </div> */}
 
               <div className="relative">
                 <button
@@ -501,11 +482,11 @@ function Navbar() {
                       <span className="text-slate-700">Profile</span>
                     </button>
                     <button
-                      onClick={navigateToSettings}
+                      onClick={navigateToRideDetails}
                       className="w-full px-4 py-2 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
                     >
                       <Settings className="w-4 h-4 text-indigo-600" />
-                      <span className="text-slate-700">Settings</span>
+                      <span className="text-slate-700">Ride Details</span>
                     </button>
                   </div>
                 )}
@@ -588,7 +569,9 @@ function Navbar() {
           {/* Unauthenticated User UI */}
           {role === null && (
             <div className="flex items-center space-x-4">
-              <button className="px-4 py-2 text-slate-700 hover:text-indigo-600 transition-colors duration-300 font-medium">
+              <button 
+              onClick = {navigateToRegisterPage}
+              className="px-4 py-2 text-slate-700 hover:text-indigo-600 transition-colors duration-300 font-medium">
                 Login
               </button>
               <button
@@ -671,7 +654,9 @@ function Navbar() {
 
             {role === null && (
               <div className="pt-4 border-t border-slate-200 space-y-3">
-                <button className="w-full px-4 py-3 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors duration-200">
+                <button 
+                
+                className="w-full px-4 py-3 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors duration-200">
                   Login
                 </button>
                 <button

@@ -7,22 +7,25 @@ import { useEffect , useState} from 'react';
 
 const RideResults =  () => {
 
-  const getTokenFromBackend = async () => {
+  const checkAuthenticated = async () => {
     try {
-      const response = await fetch("http://localhost:5001/user/get-token", {
+      const response = await fetch("http://localhost:5001/gettokendetails/get-token", {
         method: "GET",
-        credentials: "include", // Ensure cookies are sent
+        credentials: "include",
       });
-  
+
       if (!response.ok) {
-        throw new Error("Failed to fetch token");
+        console.error("Token fetch failed:", response.statusText);
+        return { role: null, userid: null };
       }
-  
+
       const data = await response.json();
-      return { role: data.role, userid: data.userid , name : data.name , userNumber : data.userNumber };
+      console.log("--->>" , data);
+      return { role: data.role, userid: data.userid };
+
     } catch (error) {
-      console.error("Error fetching token:", error);
-      return { role: null, userid: null ,name : null ,userNumber : null };
+      console.error("Error fetching user role:", error);
+      return { role: null, userid: null };
     }
   };
   
@@ -31,37 +34,23 @@ const RideResults =  () => {
     const location = useLocation();
     const {rides , userStartLocation , userEndLocation , date , time} = location.state || {};
 
+    console.log("om  ",{rides , userStartLocation , userEndLocation , date , time});
     // const handleSubmit = async (ride) => {
       const handleSubmit = async (ride) => {
-        const {role , userid , name , userNumber } = await getTokenFromBackend();
-      console.log( {role , userid , name , userNumber });
+        const {role , userid} = await checkAuthenticated();
+      console.log( {role , userid });
         if (!userid || role === "driver") {
           console.log("User is not authenticated!!!!");
           navigate("/userlogin");
           return;
         }
-      
-        // console.log("Token received:", token);
-      
-        // const decodedToken = jwtDecode(token);
-        // const userid = decodedToken.userid;
-      
-        // if (!userid) {
-        //   console.log("User is not authenticated!!!!");
-        //   navigate("/userlogin");
-        //   return;
-        // }
-      
         console.log("Ride Id:", ride.rideId);
       
         try {
           const userData = {
-            name: name,
-            mobileNumber: userNumber,
             startLocation: userStartLocation,
             endLocation: userEndLocation,
             rideId: ride.rideId,
-            userId : userid,
             rideCost : ride.rideCost,
             date : date,
             time : time
@@ -71,6 +60,7 @@ const RideResults =  () => {
       
           const response = await fetch("http://localhost:5001/offer/matchride", {
             method: "POST",
+            credentials : "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(userData),
           });

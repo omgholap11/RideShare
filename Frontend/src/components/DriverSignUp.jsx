@@ -116,7 +116,7 @@ const DriverSignUp = () => {
         const response = await fetch("http://localhost:5001/driver/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formData)
         });
 
         console.log(response);

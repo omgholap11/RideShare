@@ -28,15 +28,11 @@ async function handleUserSignUp(req, res) {
         return res.status(400).json({ msg: "failed", error: "Email already registered." });
       }
   
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(newuser.password, salt);
-  
       // Create new driver
       const created = await user.create({
         fullName: newuser.name,
         mobileNumber: newuser.mobileNumber,
-        password: hashedPassword, // Fixed typo
+        password: newuser.password,
       });
   
       if (!created) {
@@ -57,99 +53,80 @@ async function handleUserSignUp(req, res) {
   
   
   
-  async function handleUserLogin(req, res) {
-    const { mobileNumber, password } = req.body;
+  // async function handleUserLogin(req, res) {
+  //   const { mobileNumber, password } = req.body;
   
-    if (!mobileNumber || !password) {
-      console.log({ msg: "failed", error: "Missing field in login form" });
-      return res.status(400).json({ msg: "failed", error: "Missing field in login form" });
-    }
+  //   if (!mobileNumber || !password) {
+  //     console.log({ msg: "failed", error: "Missing field in login form" });
+  //     return res.status(400).json({ msg: "failed", error: "Missing field in login form" });
+  //   }
   
-    try {
-      const getuser = await user.findOne({ mobileNumber });
-      if (!getuser) {
-        console.log({ msg: "failed", error: "Incorrect email Id entered!" });
-        return res.status(401).json({ msg: "failed", error: "Incorrect email Id entered!" });
-      }
+  //   try {
+  //     const getuser = await user.findOne({ mobileNumber });
+  //     if (!getuser) {
+  //       console.log({ msg: "failed", error: "Incorrect email Id entered!" });
+  //       return res.status(401).json({ msg: "failed", error: "Incorrect email Id entered!" });
+  //     }
   
-      const checkpass = await bcrypt.compare(password, getuser.password); // Ensure "password" field exists
+  //     const checkpass = await bcrypt.compare(password, getuser.password); // Ensure "password" field exists
   
-      if (!checkpass) {
-        console.log({ msg: "failed", error: "Incorrect password entered" });
-        return res.status(401).json({ msg: "failed", error: "Incorrect password entered" });
-      }
+  //     if (!checkpass) {
+  //       console.log({ msg: "failed", error: "Incorrect password entered" });
+  //       return res.status(401).json({ msg: "failed", error: "Incorrect password entered" });
+  //     }
   
-      // Create JWT Token
-      const token = jwt.sign(
-        { name: getuser.fullName ,mobileNumber : getuser.mobileNumber, userid: getuser._id ,role : "user"},
-        process.env.JWT_SECRET,  // Use an environment variable for security
-        { expiresIn: "2h" }  // Token expires in 2 hour
-      );
+  //     // Create JWT Token
+  //     const token = jwt.sign(
+  //       { name: getuser.fullName ,mobileNumber : getuser.mobileNumber, userid: getuser._id ,role : "user"},
+  //       process.env.JWT_SECRET,  // Use an environment variable for security
+  //       { expiresIn: "2h" }  // Token expires in 2 hour
+  //     );
   
-      // Set cookie with proper options
-      res.cookie('token', token, {
-        httpOnly: false,           // Changed to true for security
-        secure:  false,                           //process.env.NODE_ENV === 'production',  // Only use secure in production
-        sameSite: 'lax',
-        maxAge: 2 * 60 * 60 * 1000, // 2 hours
-      });
+  //     // Set cookie with proper options
+  //     res.cookie('token', token, {
+  //       httpOnly: false,           // Changed to true for security
+  //       secure:  false,                           //process.env.NODE_ENV === 'production',  // Only use secure in production
+  //       sameSite: 'lax',
+  //       maxAge: 2 * 60 * 60 * 1000, // 2 hours
+  //     });
   
-      console.log("token setted");
-      console.log(token);
+  //     console.log("token setted");
+  //     console.log(token);
   
-      return res.status(200).json({
-        msg: "Success",
-        name: getuser.fullName,
-        mobileNumber: getuser.mobileNumber,
-        userid: getuser._id,
-        token // Include token in response for frontend storage if needed
-      });
+  //     return res.status(200).json({
+  //       msg: "Success",
+  //       name: getuser.fullName,
+  //       mobileNumber: getuser.mobileNumber,
+  //       userid: getuser._id,
+  //       token // Include token in response for frontend storage if needed
+  //     });
   
-    } catch (error) {
-      console.error("Login error:", error);
-      return res.status(500).json({ msg: "failed", error: "Server error" });
-    }
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     return res.status(500).json({ msg: "failed", error: "Server error" });
+  //   }
+  // }
+
+
+   const handleUserLogin = async (req,res)=>{
+  const {mobileNumber , password} = req.body;
+  if (!mobileNumber || !password) {
+    return res.status(404).json({ msg: "Invalid fields Entered!!!" });
   }
 
-
-
-  async function handleGetUserToken(req, res) {
-    const token = req.cookies.token; // Retrieve token from cookies
-    console.log(token);
-    if (!token) {
-      return res.status(401).json({ success: false, message: "No token found" });
-    }
+  const User = await user.matchedUserAndGenerateToken(mobileNumber , password);
+  console.log(User);
   
-    try {
-      // Split token into parts to extract payload (JWT format: header.payload.signature)
-      const tokenParts = token.split('.');
-      
-      if (tokenParts.length !== 3) {
-        return res.status(400).json({ success: false, message: "Invalid token format" });
-      }
-  
-      // Decode payload (base64 decoding)
-      const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
-  
-      if (!payload.role) {
-        return res.status(400).json({ success: false, message: "Role not found in token" });
-      }
-
-      if(payload.role === "user")
-      {
-         return res.json({ success: true, role: payload.role, userid: payload.userid , name : payload.name , userNumber : payload.mobileNumber});
-      }
-      else
-      {
-          return res.json({ success: true, role: payload.role, userid: payload.userid});
-      }
-      
-  
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      return res.status(500).json({ success: false, message: "Error processing token" });
-    }
+  if(User.error)
+  {
+    return res.status(500).json({error : "Sign In failed!!"});
   }
-  
 
-  module.exports = {handleUserLogin,handleUserSignUp , handleGetUserToken};
+  console.log("Token of user: ",User.token);
+  const token = User.token ;
+  return res.status(200).cookie('token' ,token , { httpOnly: true , secure : false , sameSite : 'Lax' , maxAge: 2 * 60 * 60 * 1000,} ).json({msg : "Sign In succedded"});
+}
+
+
+
+  module.exports = {handleUserLogin,handleUserSignUp };

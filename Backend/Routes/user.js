@@ -3,9 +3,6 @@ const { handleUserLogin,handleUserSignUp ,handleGetUserToken} = require("../Hand
 const app = express();
 
 app.post("/signup",handleUserSignUp);
-// Replace with your actual secret key
-
-app.get("/get-token",handleGetUserToken);
 
 app.post("/login",handleUserLogin);
 
