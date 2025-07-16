@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar , AlertCircle } from "lucide-react";
+import { toast } from "react-toastify";
 
 const DriverSignUp = () => {
   const navigate = useNavigate();
@@ -120,17 +121,24 @@ const DriverSignUp = () => {
         });
 
         console.log(response);
+        let errorHandled = false;
         if (response.ok) {
           const data = await response.json();
-          // Handle successful signup (e.g., redirect to login, show success message)
-          console.log('Signup successful', data);
+
+          // console.log('Signup successful', data);
+
+          toast.success("Sign up successfully!");
           navigate("/login");
         //   alert('Signup Succe
         } else {
-          alert(data.message || "Signup failed");
+          toast.error("Signed up failed!");
+          errorHandled = true;
         }
       } catch (error) {
-        alert("Error submitting form. Try again later.");
+        if(!errorHandled)
+        {
+          toast.error("Sign up failed!");
+        }
       } 
   };
 

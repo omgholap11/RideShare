@@ -3,44 +3,12 @@ import { ChevronRight, ChevronLeft, Users, Bike, Calendar, MapPin, Star } from "
 import { useNavigate } from "react-router-dom";
 function HomeMain() {
   const navigate = useNavigate();
-  // const images = [
-  //   "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600&h=400&fit=crop",
-  //   "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop",
-  //   "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop",
-  //   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
-  //   "rideshare_main.png",
-  // ];
+  
 
-  const images = ["rideshare_main.png"];
+  const images = ["rideshare_main.png","rideshare_main1.png"];
 
   const navigateToBookPage = () => navigate("/book");
-  const navigateToOfferRide = async ()=>{
-     try {
-      const response = await fetch("http://localhost:5001/user/get-token", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        console.error("Token fetch failed:", response.statusText);
-        navigate("/login");
-      }
-
-      const data = await response.json();
-      if(data.role === "driver")
-      {
-        navigate("/offer");
-      }
-      else
-      {
-       navigate("/login");
-      }
-     
-    } catch (error) {
-      console.error("Error fetching user role:", error);
-      navigate("/login"); 
-    }
-  }
+  const navigateToOfferRide = () => navigate("/offer");
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -110,7 +78,7 @@ function HomeMain() {
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative flex items-center justify-center gap-3">
                   <Users className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-                  Book a Ride
+                  Search a Ride
                 </div>
               </button>
               
@@ -148,12 +116,19 @@ function HomeMain() {
             onMouseLeave={() => setIsPaused(false)}
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/50 backdrop-blur-sm bg-white/10">
-              {/* Main Image */}
-              <div className="aspect-w-4 aspect-h-3 relative">
+              {/* Main Image Container with Fixed Dimensions */}
+              <div className="relative w-full" style={{ paddingBottom: "66.67%" }}> {/* This creates a 3:2 aspect ratio */}
                 <img
                   src={images[currentImageIndex]}
                   alt={`Rideshare experience ${currentImageIndex + 1}`}
-                  className="object-cover w-full h-full transition-all duration-700 ease-in-out"
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+                  style={{
+                    position: 'absolute',
+                    height: '100%',
+                    width: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center'
+                  }}
                 />
                 
                 {/* Image Overlay */}

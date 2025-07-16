@@ -350,7 +350,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate} from 'react-router-dom';
 
-const PersonalRideSharingDashboard = () => {
+const DriverDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {name , image ,vehicleName,vehicleNumber } = location.state || {};
@@ -652,6 +652,6 @@ const PersonalRideSharingDashboard = () => {
   );
 };
 
-export default PersonalRideSharingDashboard;
+export default DriverDashboard;
 
 

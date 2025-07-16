@@ -1,18 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { handlePostOfferInDatabase , handlePostMatchRidesInDatabase , handleGetMatchedRidesInDatabase , handleGetAcceptedRidesInDatabase,
-    handleGetDeclinedRidesInDatabase,
-    handleGetRideDetails, } = require("../Handlers/offer.js");
+const { handlePostOfferInDatabase  , handleGetRideDetails, handleEnterAcceptedRides , handleEnterDeclinedRides } = require("../Handlers/offer.js");
 
-router.post("/user", handlePostOfferInDatabase);
+router.post("/postride", handlePostOfferInDatabase);
 
-router.post("/matchride" , handlePostMatchRidesInDatabase);
+router.post("/enteracceptedrides",handleEnterAcceptedRides);
 
-router.post("/getrequestedrides",handleGetMatchedRidesInDatabase)
-
-router.post("/getacceptedrides",handleGetAcceptedRidesInDatabase)
-
-router.post("/getdeclinedrides",handleGetDeclinedRidesInDatabase)
+router.post("/enterdeclinedrides",handleEnterDeclinedRides);
 
 router.get("/getridedetails",handleGetRideDetails)
 

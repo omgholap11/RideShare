@@ -324,7 +324,8 @@ function Navbar() {
     }
   };
 
-  const navigateToRegisterPage = () => navigate("/registrationoptions");
+  const navigateToRegisterOptionsPagePage = () => navigate("/registrationoptions");
+  const navigateToLogInOptionsPage = ()=> navigate("/loginoptions");
   const navigateToHomePage = () => navigate("/");
   const navigateToBookRide = () => navigate("/book");
   const navigateToOfferRide = () => navigate("/offer");
@@ -336,8 +337,8 @@ function Navbar() {
 
   return (
     <div className="flex flex-col h-20 bg-indigo-100 to-purple-100 text-white">
-    <header className="fixed z-50 top-4 left-1/2 transform -translate-x-1/2 w-3/4 bg-indigo-100 backdrop-blur-md shadow-xl border-2 rounded-2xl border-purple-500">
-      <div className="container mx-auto px-4 flex justify-between items-center max-w-7xl h-16">
+      <header className="fixed top-0 left-0 w-full bg-indigo-100 text-white shadow-md p-4 z-50">
+      <div className="container mx-auto px-4 flex justify-between items-center max-w-7xl h-10">
         {/* Logo */}
         <div className="flex items-center space-x-3 group">
           <div
@@ -372,7 +373,7 @@ function Navbar() {
             </button>
 
             {isServicesDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-indigo-100/50 py-3 z-50">
+              <div className="absolute top-full left-0 mt-2 w-64 bg-indigo-100 backdrop-blur-md rounded-xl shadow-xl border border-indigo-100/50 py-3 z-50">
                 <div className="px-4 py-2 border-b border-slate-100 mb-2">
                   <p className="text-sm font-semibold text-slate-600">
                     Quick Actions
@@ -380,7 +381,7 @@ function Navbar() {
                 </div>
                 <button
                   onClick={navigateToBookRide}
-                  className="w-full px-4 py-3 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
+                  className="w-full px-4 py-3 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                 >
                   <Car className="w-5 h-5 text-indigo-600" />
                   <div>
@@ -392,7 +393,7 @@ function Navbar() {
                 </button>
                 <button
                   onClick={navigateToOfferRide}
-                  className="w-full px-4 py-3 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
+                  className="w-full px-4 py-3 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                 >
                   <Users className="w-5 h-5 text-indigo-600" />
                   <div>
@@ -570,15 +571,16 @@ function Navbar() {
           {role === null && (
             <div className="flex items-center space-x-4">
               <button 
-              onClick = {navigateToRegisterPage}
-              className="px-4 py-2 text-slate-700 hover:text-indigo-600 transition-colors duration-300 font-medium">
+              onClick = {navigateToLogInOptionsPage}
+              className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 flex items-center space-x-2 
+                  shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95">
                 Login
               </button>
               <button
                 className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg 
                   hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 flex items-center space-x-2 
                   shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
-                onClick={navigateToRegisterPage}
+                onClick={navigateToRegisterOptionsPagePage}
               >
                 <User className="w-4 h-4" />
                 <span className="font-medium">Register</span>
@@ -602,7 +604,7 @@ function Navbar() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white/95 backdrop-blur-md border-t border-indigo-100/50 shadow-lg">
+        <div className="lg:hidden bg-indigo-100 backdrop-blur-md border-t border-indigo-100/50 shadow-lg">
           <div className="px-4 py-6 space-y-4">
             <div className="space-y-2">
               <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">

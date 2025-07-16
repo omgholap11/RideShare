@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {AlertCircle} from "lucide-react"
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../Features/authSlice";
+import { toast } from "react-toastify";
 
 const DriverLogin = () => {
   const navigate = useNavigate();
@@ -69,19 +70,27 @@ const DriverLogin = () => {
         });
 
         const data = await response.json();
+        let errorHandled = false;
         console.log("Login response:", data);
         if (response.status === 200) {
-          // console.log("Role in authSlice: ",role);
-      console.log("UserId in authSlice: ",data.userid);
+        
+          toast.success("Login Succeeded!");
           dispatch(setUserDetails({role : "driver" , userId : data.userid}));
           setlogin(1);
           navigate("/offer");
         } else {
+
+          toast.error("Login Failed!!");
+          errorHandled = true;
           setlogin(2);
           setErrors({ apiError: data.error || "Login failed. Try again!" });
         }
       } catch (error) {
-        console.error("Error during login:", error);
+        // console.error("Error during login:", error);
+        if(!errorHandled)
+        {
+          toast.error("Login Failed!");
+        }
         setlogin(2);
         setErrors({
           apiError: "Something went wrong. Please try again later!",
@@ -220,7 +229,7 @@ const DriverLogin = () => {
                   </button>
                 </div>
 
-                {login === 1 && (
+                {/* {login === 1 && (
                   <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-md shadow-md flex items-center">
                     <div className="flex-shrink-0">
                       <Check className="h-6 w-6 text-green-500" />
@@ -249,7 +258,7 @@ const DriverLogin = () => {
                       </p>
                     </div>
                   </div>
-                )}
+                )} */}
 
                 {/* Sign Up Link */}
                 <div className="text-center mt-4">

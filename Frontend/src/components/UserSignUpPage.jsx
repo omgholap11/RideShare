@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, User, Smartphone, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const UserSignUpPage = () => {
     const navigate = useNavigate();
@@ -70,8 +71,10 @@ const UserSignUpPage = () => {
 
     // if (validateForm()) {
       try {
-        // Replace with your actual backend signup endpoint
-        console.log("Request send!!!");
+
+        // console.log("Request send!!!");
+
+
         const response = await fetch("http://localhost:5001/user/signup", {
           method: 'POST',
           headers: {
@@ -84,24 +87,26 @@ const UserSignUpPage = () => {
           })
         });
 
-        console.log(response);
+        // console.log(response);
+        let errorHandled = false;
         if (response.ok) {
           const data = await response.json();
           // Handle successful signup (e.g., redirect to login, show success message)
-          console.log('Signup successful', data);
+          toast.success('Signup Successfull!!');
           navigate("/userlogin");
-        //   alert('Signup Successful! Please log in.');
-        
+
         } else {
-          // Handle signup failure
+
           const errorData = await response.json();
-          console.log(errorData.message || 'Signup failed');
+          toast.error('Signup Failed');
+          errorHandled = true;
         }
       } catch (error) {
-        console.error('Signup error:', error);
-        // alert('An error occurred during signup');
+         if(errorHandled)
+         {
+          toast.error("Signup Failed!")
+         }
       }
-    // }
   };
 
   return (

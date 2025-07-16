@@ -1,6 +1,7 @@
 const express = require("express");
 const route = require("../Model/dirverRoute.js");
 const driver = require("../Model/driver.js");
+const user = require("../Model/user.js");
 const { getCoords } = require("../APIs/geocoding.js");
 const { findIntersections } = require("../Computation/intersection.js");
 const userRoute = require("../Model/userRoute.js");
@@ -16,44 +17,15 @@ async function handleSearchRides(req, res) {
     date,
     time,
   });
-  // const startLocation = "Santosh Nagar, Pune, Maharashtra 411046";
-  // const endLocation = "Swargate Flyover, Mukund Nagar, Pune, Maharashtra 411037";
-
   const coordinates = await getCoords(startLocation, endLocation);
   console.log("Received coordinates:", coordinates);
-
-  // const coordinates = {
-  //     start : { lat: 18.464256561559274, lng: 73.85797833788413 },
-  //     end : { lat: 18.499154020836837, lng: 73.85898544158336 }
-  // };
-
   const userstart = coordinates.start;
   const userend = coordinates.end;
   let distance = 0;
   let ridetime = 0;
   let distanceNumber = 0;
-
-  //Radar map api
-  //  const start = `${coordinates.start.lat}, ${coordinates.start.lng}`;
-  //     const end = `${coordinates.end.lat}, ${coordinates.end.lng}`;
-  //    await getOptimizedRoute(start,end)
-  //   .then(async (routeDetails) => {
-  //     console.log("Route details:", routeDetails)
-  //     distance = routeDetails.distance.text;
-  //     distanceNumber = routeDetails.distance.value;
-  //     ridetime = routeDetails.duration.text;
-  //     })
-  //     const rideCost = Math.floor(distanceNumber*(0.00325));
-  //     console.log("Cost of ride : ",rideCost);
-  //     console.log("Time required for ride: ",ridetime);
-  //     console.log("Distance required for ride",distance);
-
   await getRouteDirections(userstart, userend).then(async (routeDetails) => {
     console.log("Route Details :", routeDetails);
-    // console.log("Distance: ", routeDetails.routes[0].legs[0].distance);
-    // console.log("Duration: ", routeDetails.routes[0].legs[0].duration);
-    // console.log("Polyline: ", routeDetails.routes[0].overview_polyline);
-
     distance = routeDetails.routes[0].legs[0].readable_distance;
     distanceNumber = routeDetails.routes[0].legs[0].distance;
     ridetime = routeDetails.routes[0].legs[0].duration;
@@ -70,7 +42,7 @@ async function handleSearchRides(req, res) {
       const driversPath = ride.routePath;
       if (
         ride.status === "available" &&
-        date == ride.date &&
+        date == ride.date &&  
         time <= ride.rideStartTime
       ) {
         const intersection = findIntersections(driversPath, userstart, userend);
@@ -106,109 +78,8 @@ async function handleSearchRides(req, res) {
 async function handleBookingOfRides(req, res) {
   const rideId = req.body.rideId;
   const ride = await route.findByIdAndUpdate(rideId, { status: "booked" });
-  //notify user ............................
+
 }
-
-const handleEnterAcceptedRides = async (req, res) => {
-  const { userId, routeId, rideCost, userRouteId } = req.body;
-  console.log({ userId, routeId, rideCost, routeId });
-
-  // const driverRoute = await route.findById(routeId);      //find ride matching
-
-  const update = await route.findByIdAndUpdate(routeId, { status: "booked" });
-
-  // console.log(driverRoute);
-  // const driverDetails = await driver.findById(driverRoute.driverId);
-  // const userRides = await userRoute.create({
-  //     userId : userId,
-  //     startLocation : driverRoute.source,
-  //     endLocation : driverRoute.destination,
-  //     driverName : `${driverDetails.firstName} ${driverDetails.lastName}`,
-  //     contactNumber : driverDetails.mobileNumber,
-  //     image : driverDetails.image,
-  //     status : "accepted",
-  //     time : driverRoute.rideStartTime,
-  //     date : driverRoute.date,
-  //     rideCost : rideCost
-  // })
-
-  const userRides = await userRoute.findByIdAndUpdate(userRouteId, {
-    status: "accepted",
-  });
-
-  const updateMatchedUsers = await route.findOneAndUpdate(
-    { _id: routeId, "matchedUsers.userId": userId },
-    {
-      $set: {
-        "matchedUsers.$.status": "accepted",
-      },
-    }
-  );    
-
-
-  console.log("Ride accepted successfully");
-  console.log(userRides);
-
-  return res.status(200).json({ msg: "success" });
-};
-
-const handleEnterDeclinedRides = async (req, res) => {
-  const { userId, routeId, rideCost, userRouteId } = req.body;
-  console.log({ userId, routeId, rideCost, userRouteId });
-  //find ride matching
-  // console.log(driverRoute);
-  // const driverDetails = await driver.findById(driverRoute.driverId);
-  // const userRides = await userRoute.create({
-  //     userId : userId,
-  //     startLocation : driverRoute.source,
-  //     endLocation : driverRoute.destination,
-  //     driverName : `${driverDetails.firstName} ${driverDetails.lastName}`,
-  //     contactNumber : driverDetails.mobileNumber,
-  //     image : driverDetails.image,
-  //     status : "declined",
-  //     time : driverRoute.rideStartTime,
-  //     date : driverRoute.date,
-  //     rideCost : rideCost
-  // })
-  // console.log(userRides);
-
-  const now = new Date();
-  const currentDate = now.toISOString().split("T")[0]; // "YYYY-MM-DD"
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const currentTime = `${hours}:${minutes}`;
-
-  const driverRoute = await route.findById(routeId);
-  if (
-    driverRoute.date === currentDate &&
-    driverRoute.rideStartTime > currentTime
-  ) {
-    const update = await route.findByIdAndUpdate(routeId, {
-      status: "available",
-    });
-  } else {
-    const update = await route.findByIdAndUpdate(routeId, {
-      status: "cancelled",
-    });
-  }
-
-  const updateMatchedUsers = await route.findOneAndUpdate(
-    { _id: routeId, "matchedUsers.userId": userId },
-    {
-      $set: {
-        "matchedUsers.$.status": "declined",
-      },
-    }
-  );    
-
-  const userRides = await userRoute.findByIdAndUpdate(userRouteId, {
-    status: "declined",
-  });
-
-  console.log(userRides);
-  console.log("Ride declined successfully");
-  return res.status(200).json({ msg: "success" });
-};
 
 const handleGetRequestedRideDetails = async (req, res) => {         //user notification page
   const { userid } = req.body;
@@ -243,11 +114,86 @@ const handlePostCompletedRides = async (req,res)=>{
     return res.status(200).json({msg : "success"});
 }
 
+
+async function handlePostMatchRidesInDatabase(req, res) {
+  const {
+    startLocation,
+    endLocation,
+    rideId,
+    rideCost,
+    date,
+    time,
+  } = req.body;
+  console.log({
+    startLocation,
+    endLocation,
+    rideId,
+    date,
+    time,
+  });
+
+  const userId = req.user.userId;
+  console.log("User id>> ",userId);
+  const User = await user.findById(userId);
+
+  
+  const routeDetails = await route.findById(rideId);
+  const driverDetails = await driver.findById(routeDetails.driverId);
+  const userRides = await userRoute.create({
+          userId : userId,
+          rideId : rideId,
+          driverName : driverDetails.firstName + " " + driverDetails.lastName,
+          startLocation : routeDetails.source,
+          endLocation : routeDetails.destination,  
+          contactNumber : driverDetails.mobileNumber,
+          image : driverDetails.image,
+          status : "requested",
+          time : time,
+          date : date,
+          rideCost : rideCost
+      })
+
+
+      const ride = await route.findByIdAndUpdate(
+        rideId,
+        {
+          $set: { status: "pending" }, // Update the ride status to "matched"
+          $push: {
+            matchedUsers: {
+              userId: userId,
+              userRouteId: userRides._id,
+              name: User.name,
+              contactNumber: User.mobileNumber,
+              startLocation: startLocation,
+              endLocation: endLocation,
+              status: "requested",
+              rideCost: rideCost,
+              date: date,
+              time: time,
+            },
+          },
+        },
+        { new: true } // Returns the updated document
+      );
+
+
+console.log("matched user: ",ride);
+  console.log(userRides);
+  console.log({
+    msg: "Ride request is send to rider he will connect you in shortyl",
+  });
+  return res
+    .status(200)
+    .json({
+      msg: "Ride request is send to rider he will connect you in shortyl",
+    });
+}
+
+
 module.exports = {
   handleBookingOfRides,
   handleSearchRides,
-  handleEnterAcceptedRides,
-  handleEnterDeclinedRides,
   handleGetRequestedRideDetails,
-  handlePostCompletedRides
+  handlePostCompletedRides,
+  handlePostMatchRidesInDatabase
 };

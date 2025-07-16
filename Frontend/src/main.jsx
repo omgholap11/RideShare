@@ -1,38 +1,46 @@
-import { Children, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import React from "react";
 import "./index.css";
-// import HomePage from './HomePage.jsx'
-import Cards from "./components/Cards";
-import Navbar from "./components/Navbar";
-import HomeMain from "./components/HomeMain";
-import Footer from "./components/Footer";
-import BookRidePage from "./components/BookRidePage";
-import Layout from "./components/Layout.jsx";
-import DriverSignUp from "./components/DriverSignUp.jsx";
-import DriverLogin from "./components/DriverLogIn.jsx";
-import DriverDashboard from "./components/DriverDashboard.jsx";
-import OfferRide from "./components/OfferRide.jsx";
-import RidePlaced from "./components/RidePlaced.jsx";
-import RideResults from "./components/RideResults.jsx";
-import RequestedRides from "./components/RequestedRides.jsx";
-import BookRide from "./components/BookRide.jsx";
-import UserLoginPage from "./components/UserLogInPage.jsx";
-import UserSignUpPage from "./components/UserSignUpPage.jsx";
-import RideBookSuccess from "./components/RideBookSuccess.jsx";
-import UserNotification from "./components/UserNotification.jsx";
-import DriverFeedbackForm from "./components/DriverFeedbackForm.jsx";
-import ThankingUser from "./components/ThankingUser.jsx";
-import RegistrationOptions from "./components/RegistrationOptions.jsx";
-import AboutUs from "./components/AboutUs.jsx";
-import ContactUs from "./components/ContactUs.jsx";
-import Popup from "./components/popup.jsx";
-
-import {Provider} from "react-redux";
+import { Provider } from "react-redux";
 import { store } from "./App/store.js";
-import SupportPage from "./components/SupportPage.jsx";
-import SafetyPage from "./components/SafetyPage.jsx";
+
+//components
+import {
+  Navbar,
+  BookRide,
+  BookRidePage,
+  Cards,
+  ContactUs,
+  CounterCards,
+  DriverDashboard,
+  DriverLogin,
+  DriverSignUp,
+  Footer,
+  HomeMain,
+  Layout,
+  LogInOptions,
+  OfferRide,
+  RegistrationOptions,
+  RequestedRides,
+  RideBookSuccess,
+  RideDetails,
+  RidePlaced,
+  Unauthorized,
+  RideResults,
+  RideShareFaq,
+  SafetyPage,
+  SupportPage,
+  ThankingUser,
+  UserNotification,
+  UserSignUpPage,
+  UserLoginPage,
+  DriverFeedbackForm,
+  AboutUs,
+} from "./components/index.js";
+import {
+  checkUserAuthLoader,
+  checkDriverAuthLoader,
+} from "./checkAuthLoader.js";
 
 const router = createBrowserRouter([
   {
@@ -47,7 +55,7 @@ const router = createBrowserRouter([
             <Cards />
           </>
         ),
-      },  
+      },
       {
         path: "book",
         element: <BookRidePage />,
@@ -57,87 +65,104 @@ const router = createBrowserRouter([
         element: <DriverSignUp />,
       },
       {
-        path : "login",
-        element : <DriverLogin/>
+        path: "login",
+        element: <DriverLogin />,
       },
       {
-        path : "dashboard",
-        element : <DriverDashboard/>
+        path: "dashboard",
+        element: <DriverDashboard />,
+        loader: checkDriverAuthLoader,
       },
       {
-        path : "offer",
-        element : <OfferRide/>
+        path: "offer",
+        element: <OfferRide />,
+        loader: checkDriverAuthLoader,
       },
       {
-          path : "rideplaced",
-          element : <RidePlaced/>
+        path: "rideplaced",
+        element: <RidePlaced />,
+        loader: checkDriverAuthLoader,
       },
       {
-        path : "rideresults",
-        element : <RideResults/>
+        path: "rideresults",
+        element: <RideResults />,
       },
       {
-        path : "requestedrides",
-        element : <RequestedRides/>
+        path: "requestedrides",
+        element: <RequestedRides />,
+        loader: checkDriverAuthLoader,
       },
       {
-        path : "bookride",
-        element : <BookRide/>
+        path: "bookride",
+        element: <BookRide />,
       },
       {
-        path : "userlogin",
-        element : <UserLoginPage/>
+        path: "userlogin",
+        element: <UserLoginPage />,
       },
       {
-        path : "usersignup",
-        element : <UserSignUpPage/>
-      },{
-        path : "ridebooksuccess",
-        element : <RideBookSuccess/>
+        path: "usersignup",
+        element: <UserSignUpPage />,
       },
       {
-        path : "usernotifications",
-        element : <UserNotification/>
+        path: "ridebooksuccess",
+        element: <RideBookSuccess />,
+        loader: checkUserAuthLoader,
       },
       {
-        path : "driverfeedback",
-        element : <DriverFeedbackForm/>
+        path: "usernotifications",
+        element: <UserNotification />,
+        loader: checkUserAuthLoader,
       },
       {
-        path : "thankinguser",
-        element : <ThankingUser/>
+        path: "driverfeedback",
+        element: <DriverFeedbackForm />,
+        loader: checkUserAuthLoader,
       },
       {
-        path : "registrationoptions",
-        element : <RegistrationOptions/>
+        path: "thankinguser",
+        element: <ThankingUser />,
+        loader: checkUserAuthLoader,
       },
       {
-        path : "aboutus",
-        element : <AboutUs/>
+        path: "registrationoptions",
+        element: <RegistrationOptions />,
       },
       {
-        path : "contactus",
-        element : <ContactUs/>
+        path: "aboutus",
+        element: <AboutUs />,
       },
       {
-        path : "/popup",
-        element : <Popup/>
+        path: "contactus",
+        element: <ContactUs />,
       },
       {
-        path : "support",
-        element : <SupportPage/>
+        path: "support",
+        element: <SupportPage />,
       },
       {
-        path : "safety",
-        element : <SafetyPage/>
+        path: "safety",
+        element: <SafetyPage />,
+      },
+      {
+        path: "ridedetails",
+        element: <RideDetails />,
+        checkUserAuthLoader,
+      },
+      {
+        path: "loginoptions",
+        element: <LogInOptions />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <Unauthorized />,
   },
 ]);
 
 createRoot(document.getElementById("root")).render(
- 
- <Provider store = {store}>
+  <Provider store={store}>
     <RouterProvider router={router} />
   </Provider>
 );

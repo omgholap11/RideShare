@@ -37,11 +37,11 @@ const BookRide = () => {
                  body : JSON.stringify(userData)
                }
             );
-            alert("Ride booked successfully rider will connect you shortly or you can connect him!");
+            toast.success("Ride booked successfully!!");
         }
         catch(error)
         {
-
+            toast.error("Error while booking Ride!");
         }
     } else {
       // Optionally show error or prevent submission

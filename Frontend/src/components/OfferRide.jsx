@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {AlertCircle} from "lucide-react"
+import { toast } from 'react-toastify';
 import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
@@ -75,44 +76,63 @@ const OfferRide = () => {
   };
 
   // Function to handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    // Construct the request payload
-    const rideData = {
-      startLocation: formData.startLocation,
-      endLocation: formData.endLocation,
-      date: formData.date,
-      time: formData.time,
-    };
-  
-    try {
-      const response = await fetch("http://localhost:5001/offer/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Origin": "http://localhost:5173"
-        },
-        credentials: 'include',  // Add this line to include cookies
-        body: JSON.stringify(rideData),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to submit ride offer: ${response.statusText}`);
-      }
-  
-      console.log("Ride offer submitted successfully:", rideData);
-      // alert("Ride offered successfully! Our team will handle the pricing.");
-      setFormData({ startLocation: "", endLocation: "", date: "", time: "" });
-      navigate("/rideplaced", {state : {startLocation : rideData.startLocation , endLocation : rideData.endLocation}});
-      // Reset form after successful submission
-      
-    } catch (error) {
-      console.error("Error submitting ride offer:", error);
-      alert("Failed to submit ride offer. Please try again.");
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const rideData = {
+    startLocation: formData.startLocation,
+    endLocation: formData.endLocation,
+    date: formData.date,
+    time: formData.time,
   };
+
+  try {
+    const response = await fetch("http://localhost:5001/offer/postride", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Origin: "http://localhost:5173",
+      },
+      credentials: "include", // include cookies for auth
+      body: JSON.stringify(rideData),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        toast.error("Unauthorized User!");
+      } else {
+        toast.error(`Error: ${response.statusText}`);
+      }
+      throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+    }
+
+    toast.success("Ride offered successfully!");
+    console.log("Ride offer submitted successfully:", rideData);
+
+    setFormData({
+      startLocation: "",
+      endLocation: "",
+      date: "",
+      time: "",
+    });
+
+    navigate("/rideplaced", {
+      state: {
+        startLocation: rideData.startLocation,
+        endLocation: rideData.endLocation,
+      },
+    });
+  } catch (error) {
+    // Only show toast here if it wasn’t already shown above
+    if (!error.message.includes("HTTP error")) {
+      toast.error("Error while posting ride!");
+    }
+    console.error("Ride offer error:", error);
+  }
+};
+
+
   
 
   return (

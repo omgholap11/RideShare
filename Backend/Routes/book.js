@@ -1,18 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const {handleBookingOfRides,handleSearchRides,handleEnterAcceptedRides,handleEnterDeclinedRides,handleGetRequestedRideDetails , handlePostCompletedRides} = require("../Handlers/book.js");
+const {handleBookingOfRides,handleSearchRides,handleGetRequestedRideDetails ,handlePostMatchRidesInDatabase, handlePostCompletedRides} = require("../Handlers/book.js");
+const checkForUserAuthenticationCookie = require("../Middleware/UserAuthentication.js");
 
 
 router.post("/search",handleSearchRides);
 
-router.post("/bookride",handleBookingOfRides);
+router.post("/bookride",checkForUserAuthenticationCookie("token"), handleBookingOfRides);
 
-router.post("/enteracceptedrides",handleEnterAcceptedRides);
+router.post("/matchride" , checkForUserAuthenticationCookie("token"),  handlePostMatchRidesInDatabase);
 
-router.post("/enterdeclinedrides",handleEnterDeclinedRides);
+router.post("/getrequestedridedetails",checkForUserAuthenticationCookie("token"),handleGetRequestedRideDetails);
 
-router.post("/getrequestedridedetails",handleGetRequestedRideDetails);
-
-router.post("/postcompletedrides",handlePostCompletedRides);
+router.post("/postcompletedrides",checkForUserAuthenticationCookie("token"),handlePostCompletedRides);
 
 module.exports = router;

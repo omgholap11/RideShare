@@ -35,15 +35,6 @@ async function handlePostOfferInDatabase(req, res) {
       });
     }
 
-    //Radar maps API.........................
-    // const start = `${coordinates.start.lat}, ${coordinates.start.lng}`;
-    // const end = `${coordinates.end.lat}, ${coordinates.end.lng}`;
-    //  await getOptimizedRoute(start,end)
-    // .then(async (routeDetails) => {
-    //   console.log("Route details:", routeDetails)
-    //   const polyline = routeDetails.legs[0].geometry.polyline;
-    //   const decodedPolyline = decodePolyline(polyline);
-
     const start = coordinates.start;
     const end = coordinates.end;
     console.log("Start ", start);
@@ -92,80 +83,6 @@ async function handlePostOfferInDatabase(req, res) {
   }
 }
 
-
-async function handlePostMatchRidesInDatabase(req, res) {
-  const {
-    startLocation,
-    endLocation,
-    rideId,
-    rideCost,
-    date,
-    time,
-  } = req.body;
-  console.log({
-    startLocation,
-    endLocation,
-    rideId,
-    date,
-    time,
-  });
-
-  const userId = req.user.userId;
-  console.log("User id>> ",userId);
-  const User = await user.findById(userId);
-
-  
-  const routeDetails = await route.findById(rideId);
-  const driverDetails = await driver.findById(routeDetails.driverId);
-  const userRides = await userRoute.create({
-          userId : userId,
-          rideId : rideId,
-          driverName : driverDetails.firstName + " " + driverDetails.lastName,
-          startLocation : routeDetails.source,
-          endLocation : routeDetails.destination,  
-          contactNumber : driverDetails.mobileNumber,
-          image : driverDetails.image,
-          status : "requested",
-          time : time,
-          date : date,
-          rideCost : rideCost
-      })
-
-
-      const ride = await route.findByIdAndUpdate(
-        rideId,
-        {
-          $set: { status: "pending" }, // Update the ride status to "matched"
-          $push: {
-            matchedUsers: {
-              userId: userId,
-              userRouteId: userRides._id,
-              name: User.name,
-              contactNumber: User.mobileNumber,
-              startLocation: startLocation,
-              endLocation: endLocation,
-              status: "requested",
-              rideCost: rideCost,
-              date: date,
-              time: time,
-            },
-          },
-        },
-        { new: true } // Returns the updated document
-      );
-
-
-console.log("matched user: ",ride);
-  console.log(userRides);
-  console.log({
-    msg: "Ride request is send to rider he will connect you in shortyl",
-  });
-  return res
-    .status(200)
-    .json({
-      msg: "Ride request is send to rider he will connect you in shortyl",
-    });
-}
 
 async function handleGetRideDetails(req, res) {
   try {
@@ -240,115 +157,182 @@ async function handleGetRideDetails(req, res) {
 
 
 
-async function handleGetMatchedRidesInDatabase(req, res) {
-  console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.user.userId;
-  // console.log(driverId);
-  const rideDetails = await route.find({ driverId: driverId });
-  //  console.log(rideDetails);
-  let matchedUserRoutes = [];
-  let matchedDriverRouteId = [];
-  rideDetails.forEach((ride) => {
-    if (ride.status != "completed" && ride.matchedUsers.length > 0) {
-      ride.matchedUsers.forEach((matchedroutes) => {
-        if(matchedroutes.status === "requested")
-        {
-            matchedUserRoutes.push(matchedroutes);
-            matchedDriverRouteId.push(ride._id);
-        }
-      });
-    }
+// async function handleGetMatchedRidesInDatabase(req, res) {
+//   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
+//   const driverId = req.user.userId;
+//   // console.log(driverId);
+//   const rideDetails = await route.find({ driverId: driverId });
+//   //  console.log(rideDetails);
+//   let matchedUserRoutes = [];
+//   let matchedDriverRouteId = [];
+//   rideDetails.forEach((ride) => {
+//     if (ride.status != "completed" && ride.matchedUsers.length > 0) {
+//       ride.matchedUsers.forEach((matchedroutes) => {
+//         if(matchedroutes.status === "requested")
+//         {
+//             matchedUserRoutes.push(matchedroutes);
+//             matchedDriverRouteId.push(ride._id);
+//         }
+//       });
+//     }
+//   });
+
+//   console.log("Matched users and their details:   ", matchedUserRoutes);
+//   console.log("Matched Route Id:   ", matchedDriverRouteId);
+//   return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
+// }
+
+// async function handleGetAcceptedRidesInDatabase(req, res) {
+//   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
+//   const driverId = req.user.userid;
+//   // console.log(driverId);
+//   const rideDetails = await route.find({ driverId: driverId });
+//   //  console.log(rideDetails);
+//   let matchedUserRoutes = [];
+//   let matchedDriverRouteId = [];
+//   rideDetails.forEach((ride) => {
+//     if (ride.status != "completed" && ride.matchedUsers.length > 0) {
+//       // const start = ride.source;
+//       // const end = ride.
+//       ride.matchedUsers.forEach((matchedroutes) => {
+//         if(matchedroutes.status === "accepted")
+//         {
+//             matchedUserRoutes.push(matchedroutes);
+//             matchedDriverRouteId.push(ride._id);
+//         }
+//       });
+//     }
+//   });
+
+//   console.log("Matched users and their details:   ", matchedUserRoutes);
+//   console.log("Matched Route Id:   ", matchedDriverRouteId);
+//   return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
+// }
+
+// async function handleGetDeclinedRidesInDatabase(req, res) {
+//   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
+//   const driverId = req.user.userId;
+//   console.log(driverId);
+//   const rideDetails = await route.find({ driverId: driverId });
+//    console.log(rideDetails);
+//   let matchedUserRoutes = [];
+//   let matchedDriverRouteId = [];
+//   rideDetails.forEach((ride) => {
+//     if (ride.status != "completed" && ride.matchedUsers.length > 0) {
+//       ride.matchedUsers.forEach((matchedroutes) => {
+//         if(matchedroutes.status === "declined")
+//         {
+//             matchedUserRoutes.push(matchedroutes);
+//             matchedDriverRouteId.push(ride._id);
+//         }
+//       });
+//     }
+//   });
+
+//   console.log("Matched users and their details:   ", matchedUserRoutes);
+//   console.log("Matched Route Id:   ", matchedDriverRouteId);
+//   return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
+// }
+
+
+// async function handleGetCompletedRidesInDatabase(req, res) {
+//   console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
+//   const driverId = req.user.userId;
+//   console.log(driverId);
+//   const rideDetails = await route.find({ driverId: driverId });
+//    console.log(rideDetails);
+//   let matchedUserRoutes = [];
+//   let matchedDriverRouteId = [];
+//   rideDetails.forEach((ride) => {
+//     if (ride.status != "completed" && ride.matchedUsers.length > 0) {
+//       ride.matchedUsers.forEach((matchedroutes) => {
+//         if(matchedroutes.status === "completed")
+//         {
+//             matchedUserRoutes.push(matchedroutes);
+//             matchedDriverRouteId.push(ride._id);
+//         }
+//       });
+//     }
+//   });
+
+//   console.log("Matched users and their details:   ", matchedUserRoutes);
+//   console.log("Matched Route Id:   ", matchedDriverRouteId);
+//   return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
+// }
+
+const handleEnterAcceptedRides = async (req, res) => {
+  const { userId, routeId, rideCost, userRouteId } = req.body;
+  console.log({ userId, routeId, rideCost, routeId });
+
+  // const driverRoute = await route.findById(routeId);      //find ride matching
+
+  const update = await route.findByIdAndUpdate(routeId, { status: "booked" });
+
+  const userRides = await userRoute.findByIdAndUpdate(userRouteId, {
+    status: "accepted",
   });
 
-  console.log("Matched users and their details:   ", matchedUserRoutes);
-  console.log("Matched Route Id:   ", matchedDriverRouteId);
-  return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
-}
-
-async function handleGetAcceptedRidesInDatabase(req, res) {
-  console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.user.userid;
-  // console.log(driverId);
-  const rideDetails = await route.find({ driverId: driverId });
-  //  console.log(rideDetails);
-  let matchedUserRoutes = [];
-  let matchedDriverRouteId = [];
-  rideDetails.forEach((ride) => {
-    if (ride.status != "completed" && ride.matchedUsers.length > 0) {
-      // const start = ride.source;
-      // const end = ride.
-      ride.matchedUsers.forEach((matchedroutes) => {
-        if(matchedroutes.status === "accepted")
-        {
-            matchedUserRoutes.push(matchedroutes);
-            matchedDriverRouteId.push(ride._id);
-        }
-      });
+  const updateMatchedUsers = await route.findOneAndUpdate(
+    { _id: routeId, "matchedUsers.userId": userId },
+    {
+      $set: {
+        "matchedUsers.$.status": "accepted",
+      },
     }
+  );    
+
+  console.log("Ride accepted successfully");
+  console.log(userRides);
+
+  return res.status(200).json({ msg: "success" });
+};
+
+const handleEnterDeclinedRides = async (req, res) => {
+  const { userId, routeId, rideCost, userRouteId } = req.body;
+  console.log({ userId, routeId, rideCost, userRouteId });
+  const now = new Date();
+  const currentDate = now.toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const currentTime = `${hours}:${minutes}`;
+
+  const driverRoute = await route.findById(routeId);
+  if (
+    driverRoute.date === currentDate &&
+    driverRoute.rideStartTime > currentTime
+  ) {
+    const update = await route.findByIdAndUpdate(routeId, {
+      status: "available",
+    });
+  } else {
+    const update = await route.findByIdAndUpdate(routeId, {
+      status: "cancelled",
+    });
+  }
+
+  const updateMatchedUsers = await route.findOneAndUpdate(
+    { _id: routeId, "matchedUsers.userId": userId },
+    {
+      $set: {
+        "matchedUsers.$.status": "declined",
+      },
+    }
+  );    
+
+  const userRides = await userRoute.findByIdAndUpdate(userRouteId, {
+    status: "declined",
   });
 
-  console.log("Matched users and their details:   ", matchedUserRoutes);
-  console.log("Matched Route Id:   ", matchedDriverRouteId);
-  return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
-}
+  console.log(userRides);
+  console.log("Ride declined successfully");
+  return res.status(200).json({ msg: "success" });
+};
 
-async function handleGetDeclinedRidesInDatabase(req, res) {
-  console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.user.userId;
-  console.log(driverId);
-  const rideDetails = await route.find({ driverId: driverId });
-   console.log(rideDetails);
-  let matchedUserRoutes = [];
-  let matchedDriverRouteId = [];
-  rideDetails.forEach((ride) => {
-    if (ride.status != "completed" && ride.matchedUsers.length > 0) {
-      ride.matchedUsers.forEach((matchedroutes) => {
-        if(matchedroutes.status === "declined")
-        {
-            matchedUserRoutes.push(matchedroutes);
-            matchedDriverRouteId.push(ride._id);
-        }
-      });
-    }
-  });
-
-  console.log("Matched users and their details:   ", matchedUserRoutes);
-  console.log("Matched Route Id:   ", matchedDriverRouteId);
-  return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
-}
-
-
-async function handleGetCompletedRidesInDatabase(req, res) {
-  console.log("Request to handleGetMatchedRidesInDatabase is obtained!!");
-  const driverId = req.user.userId;
-  console.log(driverId);
-  const rideDetails = await route.find({ driverId: driverId });
-   console.log(rideDetails);
-  let matchedUserRoutes = [];
-  let matchedDriverRouteId = [];
-  rideDetails.forEach((ride) => {
-    if (ride.status != "completed" && ride.matchedUsers.length > 0) {
-      ride.matchedUsers.forEach((matchedroutes) => {
-        if(matchedroutes.status === "completed")
-        {
-            matchedUserRoutes.push(matchedroutes);
-            matchedDriverRouteId.push(ride._id);
-        }
-      });
-    }
-  });
-
-  console.log("Matched users and their details:   ", matchedUserRoutes);
-  console.log("Matched Route Id:   ", matchedDriverRouteId);
-  return res.status(200).json({ matchedUserRoutes, matchedDriverRouteId });
-}
 
 
 module.exports = {
   handlePostOfferInDatabase,
-  handlePostMatchRidesInDatabase,
-  handleGetMatchedRidesInDatabase,
-  handleGetAcceptedRidesInDatabase,
-  handleGetDeclinedRidesInDatabase,
+  handleEnterAcceptedRides,
+  handleEnterDeclinedRides,
   handleGetRideDetails,
 };

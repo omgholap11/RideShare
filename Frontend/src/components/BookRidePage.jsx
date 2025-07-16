@@ -85,9 +85,13 @@ const BookRidePage = () => {
 
       const data = await response.json();
       // Navigate to search results page with the received data
-      console.log(data.rides);
+      console.log('Backend Response:', data);
+      console.log('Rides from backend:', data.rides);
+      
+      // Ensure rides is always an array
+      const rides = Array.isArray(data.rides) ? data.rides : [];
       console.log('Navigation Data:', {
-      rides: data.rides,
+      rides: rides,
       userStartLocation: formData.startLocation,
       userEndLocation: formData.endLocation,
       date: formData.date,
@@ -107,7 +111,7 @@ const BookRidePage = () => {
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-800 mb-3">Book Your Ride</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-3">Search For a Ride</h1>
           <p className="text-gray-600 max-w-xl mx-auto">
             Enter your journey details below to find available rides that match your route and schedule.
           </p>

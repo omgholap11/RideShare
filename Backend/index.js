@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const bodyparser = require("body-parser");
 const cors = require("cors");
 const  checkForAuthenticationCookie  = require("./Middleware/Authentication.js");
+const checkForDriverAuthenticationCookie = require("./Middleware/DriverAuthentication.js");
 require("dotenv").config();
 
 const app = express();
@@ -39,9 +40,10 @@ app.use(
 );
 app.use(checkForAuthenticationCookie("token"));
 
+
 // routes
 app.use("/driver", driverRoute);
-app.use("/offer", offerRoute);
+app.use("/offer" ,checkForDriverAuthenticationCookie("token") , offerRoute);
 app.use("/book",bookRoute);      //book == userroute
 app.use("/user",userRoute)
 app.use("/gettokendetails",tokenRouter);

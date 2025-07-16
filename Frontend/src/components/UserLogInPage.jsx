@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Lock, User, Smartphone , Check , AlertCircle } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../Features/authSlice";
+import { toast } from "react-toastify";
 const UserLoginPage = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -67,21 +68,24 @@ const UserLoginPage = () => {
 
         if (response.ok) {
           const data = await response.json();
-          // Handle successful login (e.g., store token, redirect)
-          console.log("Login successful", data);
+          
+          
           dispatch(setUserDetails({role : "user" , userId : data.userid}));
           setlogin(1);
+
+          toast.success("SignIn Successful");
           // alert('Login Successful!');
           // Navigate("/rideresults");
         } else {
           // Handle login failure
-          const errorData = await response.json();
-          console.log(errorData.message || "Login failed");
           setlogin(2);
+          toast.error("SignIn Failed!");
         }
       } catch (error) {
-        console.error("Login error:", error);
-        console.log("An error occurred during login");
+        if(login === 2)
+        {
+            toast.error("SignIn Failed!");
+        }
         setlogin(2);
       }
     }
@@ -194,7 +198,7 @@ const UserLoginPage = () => {
           </button>
         </form>
 
-        {login === 1 && (
+        {/* {login === 1 && (
           <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-md shadow-md flex items-center">
             <div className="flex-shrink-0">
               <Check className="h-6 w-6 text-green-500" />
@@ -220,7 +224,7 @@ const UserLoginPage = () => {
               </p>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Signup Option */}
         <div className="text-center">

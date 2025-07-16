@@ -15,7 +15,7 @@ import {
   User,
 } from "lucide-react";
 
-function SupportPage() {
+function RideShareFaq() {
   const [activeCategory, setActiveCategory] = useState("getting-started");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedFAQ, setExpandedFAQ] = useState(null);
@@ -270,4 +270,4 @@ function SupportPage() {
   );
 }
 
-export default SupportPage;
+export default RideShareFaq;
