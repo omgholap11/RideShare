@@ -4,10 +4,11 @@ const { handlePostOfferInDatabase  , handleGetRideDetails, handleEnterAcceptedRi
 
 router.post("/postride", handlePostOfferInDatabase);
 
-router.post("/enteracceptedrides",handleEnterAcceptedRides);
+router.put("/enteracceptedrides/:routeId",handleEnterAcceptedRides);
 
-router.post("/enterdeclinedrides",handleEnterDeclinedRides);
+router.put("/enterdeclinedrides/:routeId",handleEnterDeclinedRides);
 
 router.get("/getridedetails",handleGetRideDetails)
 
 module.exports = router;
+

@@ -67,23 +67,21 @@ async function handleSearchRides(req, res) {
       }
     })
   );
-  //send these match rides to front end
+
   console.log(matchrides);
   console.log("Total matched rides: ", counts);
   return res.status(200).json({ rides: matchrides });
 }
 
-// const
 
-async function handleBookingOfRides(req, res) {
-  const rideId = req.body.rideId;
-  const ride = await route.findByIdAndUpdate(rideId, { status: "booked" });
 
-}
 
-const handleGetRequestedRideDetails = async (req, res) => {         //user notification page
-  const { userid } = req.body;
+const handleGetRequestedRideDetails = async (req, res) => {    
+
+  const { userid } = req.user.userId;
+
   console.log(userid);
+
   const allrequests = await userRoute.find({});
   let requests = [];
 
@@ -92,6 +90,8 @@ const handleGetRequestedRideDetails = async (req, res) => {         //user notif
       requests.push(request);
     }
   });
+
+  
   console.log(requests);
   return res.status(200).json({ requests });
 };
@@ -138,15 +138,12 @@ async function handlePostMatchRidesInDatabase(req, res) {
 
   
   const routeDetails = await route.findById(rideId);
-  const driverDetails = await driver.findById(routeDetails.driverId);
+
   const userRides = await userRoute.create({
           userId : userId,
           rideId : rideId,
-          driverName : driverDetails.firstName + " " + driverDetails.lastName,
-          startLocation : routeDetails.source,
-          endLocation : routeDetails.destination,  
-          contactNumber : driverDetails.mobileNumber,
-          image : driverDetails.image,
+          startLocation : startLocation,
+          endLocation : endLocation,  
           status : "requested",
           time : time,
           date : date,
@@ -157,23 +154,15 @@ async function handlePostMatchRidesInDatabase(req, res) {
       const ride = await route.findByIdAndUpdate(
         rideId,
         {
-          $set: { status: "pending" }, // Update the ride status to "matched"
-          $push: {
-            matchedUsers: {
+          $set: { status: "pending" ,
+            matchedUser: {
               userId: userId,
               userRouteId: userRides._id,
-              name: User.name,
-              contactNumber: User.mobileNumber,
-              startLocation: startLocation,
-              endLocation: endLocation,
               status: "requested",
-              rideCost: rideCost,
-              date: date,
-              time: time,
             },
           },
         },
-        { new: true } // Returns the updated document
+        { new: true }
       );
 
 
@@ -190,8 +179,9 @@ console.log("matched user: ",ride);
 }
 
 
+
+
 module.exports = {
-  handleBookingOfRides,
   handleSearchRides,
   handleGetRequestedRideDetails,
   handlePostCompletedRides,

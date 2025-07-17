@@ -50,62 +50,23 @@ async function handleUserSignUp(req, res) {
     }
   }
   
-  
-  
-  
-  // async function handleUserLogin(req, res) {
-  //   const { mobileNumber, password } = req.body;
-  
-  //   if (!mobileNumber || !password) {
-  //     console.log({ msg: "failed", error: "Missing field in login form" });
-  //     return res.status(400).json({ msg: "failed", error: "Missing field in login form" });
-  //   }
-  
-  //   try {
-  //     const getuser = await user.findOne({ mobileNumber });
-  //     if (!getuser) {
-  //       console.log({ msg: "failed", error: "Incorrect email Id entered!" });
-  //       return res.status(401).json({ msg: "failed", error: "Incorrect email Id entered!" });
-  //     }
-  
-  //     const checkpass = await bcrypt.compare(password, getuser.password); // Ensure "password" field exists
-  
-  //     if (!checkpass) {
-  //       console.log({ msg: "failed", error: "Incorrect password entered" });
-  //       return res.status(401).json({ msg: "failed", error: "Incorrect password entered" });
-  //     }
-  
-  //     // Create JWT Token
-  //     const token = jwt.sign(
-  //       { name: getuser.fullName ,mobileNumber : getuser.mobileNumber, userid: getuser._id ,role : "user"},
-  //       process.env.JWT_SECRET,  // Use an environment variable for security
-  //       { expiresIn: "2h" }  // Token expires in 2 hour
-  //     );
-  
-  //     // Set cookie with proper options
-  //     res.cookie('token', token, {
-  //       httpOnly: false,           // Changed to true for security
-  //       secure:  false,                           //process.env.NODE_ENV === 'production',  // Only use secure in production
-  //       sameSite: 'lax',
-  //       maxAge: 2 * 60 * 60 * 1000, // 2 hours
-  //     });
-  
-  //     console.log("token setted");
-  //     console.log(token);
-  
-  //     return res.status(200).json({
-  //       msg: "Success",
-  //       name: getuser.fullName,
-  //       mobileNumber: getuser.mobileNumber,
-  //       userid: getuser._id,
-  //       token // Include token in response for frontend storage if needed
-  //     });
-  
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     return res.status(500).json({ msg: "failed", error: "Server error" });
-  //   }
-  // }
+async function handleUserLogOut(req, res) {
+
+  try {
+
+    res.clearCookie("token", { httpOnly: true, secure: false, sameSite: 'Lax' });
+    console.log("User logged out successfully"); 
+    
+    
+    return res.status(200).json({ msg: "success" });
+
+  } catch (error) {
+
+
+    console.error("Error during logout:", error);
+    return res.status(500).json({ msg: "failed", error: "Server error." });
+  }
+}
 
 
    const handleUserLogin = async (req,res)=>{
@@ -129,4 +90,4 @@ async function handleUserSignUp(req, res) {
 
 
 
-  module.exports = {handleUserLogin,handleUserSignUp };
+  module.exports = {handleUserLogin,handleUserSignUp ,handleUserLogOut};

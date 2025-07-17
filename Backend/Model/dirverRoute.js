@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const routeSchema = new mongoose.Schema({
     driverId: {
         type : mongoose.Schema.Types.ObjectId,  // reference of the user
-        ref : "drivers",
+        ref : "driver",
     },
     routePath : [
         {
@@ -30,8 +30,9 @@ const routeSchema = new mongoose.Schema({
     },
     status : {
         type : String,
-        enum : ["completed","cancelled","matched","available","onHold","booked","notBooked"],
+        enum : ["completed","cancelled","matched","available","onHold","booked","notBooked","upcoming"],
         required : true,
+        default : "available"
     },
     source : {
         type : String,
@@ -41,20 +42,11 @@ const routeSchema = new mongoose.Schema({
         type : String,
         required : true,
     },
-    matchedUsers: [
-        {
-          userId : {type : mongoose.Schema.Types.ObjectId , ref : "users"},
+    matchedUser: {
+          userId : {type : mongoose.Schema.Types.ObjectId , ref : "user"},
           userRouteId : {type : mongoose.Schema.Types.ObjectId , ref : "userRoute"},
-          name: { type: String, required: true },
-          contactNumber: { type: String, required: true },
-          startLocation: { type: String, required: true },
-          endLocation: { type: String, required: true },
-          status: { type: String, enum: ["requested", "accepted", "declined"], default: "requested" },
-          rideCost : {type:Number , required : true},
-          time : {type : String , required : true},
-          date : {type : String , required : true}
+          status: { type: String, enum: ["requested", "accepted", "declined","matched","unmatched"], default: "unmatched" },
         }
-    ]
 },{timestamps : true});
 
 

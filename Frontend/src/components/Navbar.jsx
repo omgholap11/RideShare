@@ -103,7 +103,7 @@
 //             }
 //           }
 
-//           const navigateToUserNotification = async ()=>{
+//           const navigateToUserRideHistory = async ()=>{
 //             // const {userid} = await fetchUserRole();
 //             console.log(userId);
 //             try{
@@ -173,7 +173,7 @@
 
 //           {role === "user" && (
 //             <div className="flex items-center space-x-4">
-//               <button onClick={navigateToUserNotification} className="px-4 py-2 bg-black text-white rounded hover:bg-black transition">
+//               <button onClick={navigateToUserRideHistory} className="px-4 py-2 bg-black text-white rounded hover:bg-black transition">
 //                 Notifications
 //               </button>
 //             </div>
@@ -273,7 +273,7 @@ function Navbar() {
   const navigateToRideDetails = ()=>{
     navigate("/requestedrides");
   }
-  const navigateToUserNotification = async () => {
+  const navigateToUserRideHistory = async () => {
     const { userid } = await fetchUserRole();
     console.log(userid);
     try {
@@ -332,8 +332,45 @@ function Navbar() {
   const navigateToSupport = () => navigate("/support");
   const navigateToSafety = () => navigate("/safety");
   const navigateToRideHistory = () => navigate("/");
-  const navigateToReferrals = () => navigate("/");
-  const navigateToFeedback = () => navigate("/");
+  const handlerToLogOutUser = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/user/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        console.error("Logout failed:", response.statusText);
+        return;
+      }
+
+      setRole(null);
+      setUserid(null);
+      navigateToLogInOptionsPage();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  }
+
+  const handlerToLogOutDriver = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/driver/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        console.error("Logout failed:", response.statusText);
+        return;
+      }
+
+      setRole(null);
+      setUserid(null);
+      navigateToLogInOptionsPage();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  }
 
   return (
     <div className="flex flex-col h-20 bg-indigo-100 to-purple-100 text-white">
@@ -440,22 +477,13 @@ function Navbar() {
           {/* User-specific UI */}
           {role === "driver" && (
             <div className="flex items-center space-x-4">
-              {/* <div className="relative">
-                <button
-                  onClick={navigateToRequestedRides}
-                  className="relative p-2 rounded-full hover:bg-indigo-50 transition-colors duration-300 group"
-                >
-                  <Bell className="w-6 h-6 text-slate-600 group-hover:text-indigo-600 transition-colors" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-                </button>
-              </div> */}
 
               <div className="relative">
-                <button
+              <button
                   onClick={() =>
                     setIsProfileDropdownOpen(!isProfileDropdownOpen)
                   }
-                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-indigo-50 transition-colors duration-300 group"
+                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-purple-300 transition-colors duration-300 group"
                 >
                   <CircleUser className="w-8 h-8 text-slate-600 group-hover:text-indigo-600 transition-colors" />
                   <ChevronDown
@@ -466,7 +494,7 @@ function Navbar() {
                 </button>
 
                 {isProfileDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-indigo-100/50 py-3 z-50">
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-indigo-100 backdrop-blur-md rounded-xl shadow-xl border border-indigo-100/50 py-3 z-50">
                     <div className="px-4 py-2 border-b border-slate-100 mb-2">
                       <p className="font-semibold text-slate-700">
                         Driver Dashboard
@@ -477,17 +505,24 @@ function Navbar() {
                     </div>
                     <button
                       onClick={navigateToDriverProfile}
-                      className="w-full px-4 py-2 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
+                      className="w-full px-4 py-2 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                     >
                       <User className="w-4 h-4 text-indigo-600" />
                       <span className="text-slate-700">Profile</span>
                     </button>
                     <button
                       onClick={navigateToRideDetails}
-                      className="w-full px-4 py-2 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
+                      className="w-full px-4 py-2 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                     >
                       <Settings className="w-4 h-4 text-indigo-600" />
                       <span className="text-slate-700">Ride Details</span>
+                    </button>
+                    <button
+                      onClick={handlerToLogOutDriver}
+                      className="w-full px-4 py-2 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
+                    >
+                      <Star className="w-4 h-4 text-red-900" />
+                      <span className="text-red-900">Log Out</span>
                     </button>
                   </div>
                 )}
@@ -497,23 +532,12 @@ function Navbar() {
 
           {role === "user" && (
             <div className="flex items-center space-x-4">
-              <button
-                onClick={navigateToUserNotification}
-                className="relative px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                <div className="flex items-center space-x-2">
-                  <Bell className="w-4 h-4" />
-                  <span className="font-medium">Notifications</span>
-                </div>
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-              </button>
-
               <div className="relative">
                 <button
                   onClick={() =>
                     setIsProfileDropdownOpen(!isProfileDropdownOpen)
                   }
-                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-indigo-50 transition-colors duration-300 group"
+                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-purple-300 transition-colors duration-300 group"
                 >
                   <CircleUser className="w-8 h-8 text-slate-600 group-hover:text-indigo-600 transition-colors" />
                   <ChevronDown
@@ -524,7 +548,7 @@ function Navbar() {
                 </button>
 
                 {isProfileDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-indigo-100/50 py-3 z-50">
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-indigo-100 backdrop-blur-md rounded-xl shadow-xl border border-indigo-100/50 py-3 z-50">
                     <div className="px-4 py-2 border-b border-slate-100 mb-2">
                       <p className="font-semibold text-slate-700">
                         User Account
@@ -535,31 +559,24 @@ function Navbar() {
                     </div>
                     <button
                       onClick={navigateToUserProfile}
-                      className="w-full px-4 py-2 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
+                      className="w-full px-4 py-2 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                     >
                       <User className="w-4 h-4 text-indigo-600" />
                       <span className="text-slate-700">Profile</span>
                     </button>
                     <button
                       onClick={navigateToRideHistory}
-                      className="w-full px-4 py-2 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
+                      className="w-full px-4 py-2 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                     >
                       <Calendar className="w-4 h-4 text-indigo-600" />
                       <span className="text-slate-700">Ride History</span>
                     </button>
                     <button
-                      onClick={navigateToReferrals}
-                      className="w-full px-4 py-2 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
+                      onClick={handlerToLogOutUser}
+                      className="w-full px-4 py-2 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                     >
-                      <Star className="w-4 h-4 text-indigo-600" />
-                      <span className="text-slate-700">Referrals</span>
-                    </button>
-                    <button
-                      onClick={navigateToFeedback}
-                      className="w-full px-4 py-2 text-left hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
-                    >
-                      <HelpCircle className="w-4 h-4 text-indigo-600" />
-                      <span className="text-slate-700">Feedback</span>
+                      <Star className="w-4 h-4 text-red-900" />
+                      <span className="text-red-900">Log Out</span>
                     </button>
                   </div>
                 )}

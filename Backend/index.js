@@ -38,6 +38,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(checkForAuthenticationCookie("token"));
 
 

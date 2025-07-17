@@ -12,10 +12,6 @@ const userRouteSchema = new mongoose.Schema(
       ref: "route",
       required: true
     },
-    driverName: {        //these all are details of driver...................
-      type: String,
-      required: true
-    },
     startLocation: {
       type: String,
       required: true
@@ -32,14 +28,6 @@ const userRouteSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "accepted", "declined", "completed","requested"], // Possible ride statuses
       default: "pending"
-    },
-    contactNumber: {
-      type: String,
-      required: true
-    },
-    image: {
-      type: String, // Store image filename or URL
-      required: false
     },
     rideCost : {
       type:Number,

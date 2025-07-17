@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 const UserLoginPage = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    name: "",
     mobileNumber: "",
     password: "",
   });
@@ -26,11 +25,7 @@ const UserLoginPage = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
+   
     // Mobile number validation
     const mobileNumberRegex = /^[0-9]{10}$/;
     if (!formData.mobileNumber.trim()) {
@@ -93,7 +88,7 @@ const UserLoginPage = () => {
 
   return (
     <div className="min-h-screen bg-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-2xl rounded-2xl max-w-md w-full p-8 space-y-6">
+      <div className="bg-white shadow-2xl rounded-2xl max-w-sm w-full p-8 space-y-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-800">User Login</h2>
           <p className="text-gray-600 mt-2">
@@ -103,33 +98,6 @@ const UserLoginPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Input */}
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Name
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`pl-10 pr-3 py-2 block w-full border rounded-lg focus:outline-none ${
-                  errors.name ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Enter your name"
-              />
-            </div>
-            {errors.name && (
-              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-            )}
-          </div>
 
           {/* Mobile Number Input */}
           <div>

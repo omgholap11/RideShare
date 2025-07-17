@@ -94,7 +94,23 @@ console.log(created);
   return res.status(200).cookie('token' ,token , { httpOnly: true , secure : false , sameSite : 'Lax' , maxAge: 2 * 60 * 60 * 1000,} ).json({msg : "Sign In succedded"});
 }
 
+async function handleDriverLogOut(req, res) {
 
+  try {
+
+    res.clearCookie("token", { httpOnly: true, secure: false, sameSite: 'Lax' });
+    console.log("User logged out successfully"); 
+    
+    
+    return res.status(200).json({ msg: "success" });
+
+  } catch (error) {
+
+
+    console.error("Error during logout:", error);
+    return res.status(500).json({ msg: "failed", error: "Server error." });
+  }
+}
 
 
 
@@ -113,4 +129,4 @@ async function handleSendDriverDetails(req,res){
 }
 
 
-module.exports = {handleDriverSignUp,handleDriverLogin,handleSendDriverDetails};
+module.exports = {handleDriverSignUp,handleDriverLogin,handleSendDriverDetails , handleDriverLogOut};
