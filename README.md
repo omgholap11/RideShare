@@ -20,7 +20,7 @@
 
 | Frontend | Backend | Database | APIs/SDKs |
 |----------|---------|----------|-----------|
-| React (Vite) | Node.js + Express | MongoDB (Mongoose) | Google Maps API / Ola Maps API |
+| React (Vite) | Node.js + Express | MongoDB (Mongoose) | Ola Maps API |
 | Tailwind CSS | JWT / Sessions | MongoDB Atlas | Geolocation & Routing APIs |
 
 ---
