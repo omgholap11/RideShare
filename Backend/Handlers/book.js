@@ -5,8 +5,14 @@ const user = require("../Model/user.js");
 const { getCoords } = require("../APIs/geocoding.js");
 const { findIntersections } = require("../Computation/intersection.js");
 const userRoute = require("../Model/userRoute.js");
-const { getOptimizedRoute } = require("../APIs/getPolyline.js");
 const { getRouteDirections } = require("../APIs/olaPolyline.js");
+const {connectMongoDB} = require("../Controllers/connectMongoDB.js");
+const feedbackSchema = require("../Model/feedback.js");
+const feedback = require("../Model/feedback.js");
+require("dotenv").config();
+
+
+connectMongoDB(process.env.MONGO_URL);
 
 async function handleSearchRides(req, res) {
   const { startLocation, endLocation, date, time } = req.body;
@@ -74,47 +80,6 @@ async function handleSearchRides(req, res) {
 }
 
 
-
-
-const handleGetRequestedRideDetails = async (req, res) => {    
-
-  const { userid } = req.user.userId;
-
-  console.log(userid);
-
-  const allrequests = await userRoute.find({});
-  let requests = [];
-
-  allrequests.forEach((request) => {
-    if (request.userId == userid &&( request.status === "accepted" ||  request.status === "declined") && request.rideId != "completed") {
-      requests.push(request);
-    }
-  });
-
-  
-  console.log(requests);
-  return res.status(200).json({ requests });
-};
-
-
-
-const handlePostCompletedRides = async (req,res)=>{
-    const {ride} = req.body;
-    console.log(ride);
-    console.log("Ride details to mark it as completed",ride);
-    const userRouteId = ride._id;
-    const rideDetails = await userRoute.findByIdAndUpdate(userRouteId, {status : "completed"});
-    await route.findOneAndUpdate(
-        { "matchedUsers.userRouteId": userRouteId },
-        { $set: { "matchedUsers.$.status": "completed" } }
-      );
-    const update = await route.findOneAndUpdate({_id : ride.rideId},{$set : {status : "completed"}});
-    console.log(update)
-    console.log("Ride marked as completed successfully",rideDetails);
-    return res.status(200).json({msg : "success"});
-}
-
-
 async function handlePostMatchRidesInDatabase(req, res) {
   const {
     startLocation,
@@ -178,12 +143,141 @@ console.log("matched user: ",ride);
     });
 }
 
+async function handleToGetUserRideHistory(req, res) {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const rides = await userRoute.find({ userId: userId }).populate({
+      path: "rideId",
+      populate: {
+        path: "driverId",
+        model: "driver",
+        select:
+          "firstName lastName mobileNumber image vehicleName vehicleNumber",
+      },
+    });
+
+    const userRides = rides.map((ride) => {
+
+
+      const driver = ride.rideId?.driverId;
+
+      return {
+        userRouteId: ride._id,
+        startLocation: ride.startLocation,
+        endLocation: ride.endLocation,
+        status: ride.status,
+        rideCost: ride.rideCost,
+        date: ride.date,
+        time: ride.time,
+        matchedDriver: ride.rideId && driver
+          ? {
+              startLocation: ride.rideId.source,
+              endLocation: ride.rideId.destination,
+              date: ride.rideId.date,
+              status: ride.rideId.status,
+              rideStartTime: ride.rideId.rideStartTime,
+              name: driver.firstName + " " + driver.lastName,
+              mobileNumber: driver.mobileNumber,
+              vehicleName: driver.vehicleName,
+              vehicleNumber: driver.vehicleNumber,
+              image: driver.image,
+            }
+          : null,
+      };
+    });
+
+    return res.status(200).json({ userRides });
+  } catch (error) {
+    console.error("Error fetching user ride history:", error);
+    return res.status(500).json({
+      error: "Something went wrong while fetching ride history.",
+      message: error.message,
+    });
+  }
+}
+
+
+async function handleToMarkRideAsCompleted(req, res) {
+  const userRouteId = req.params.userRouteId;
+  const userId = req.user.userId;
+
+  if (!userRouteId || !userId) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+
+    const usersRoute = await userRoute.findByIdAndUpdate(
+      userRouteId,
+      { status: "completed" },
+      { new: true }
+    );
+
+    if (!usersRoute) {
+      return res.status(404).json({ error: "User route not found" });
+    }
+
+    await route.findByIdAndUpdate(
+      usersRoute.rideId,
+      {
+        $set: {
+          "matchedUser.status": "completed",
+          status: "completed"
+        }
+      }
+    );
+
+    return res.status(200).json({ message: "Ride marked as completed successfully" });
+  } catch (error) {
+    console.error("Error marking ride as completed:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function handleSubmitFeedback(req, res) {
+
+  const {feedbackText, rating } = req.body;
+
+  const userRouteId = req.params.userRouteId;
+
+  const userId = req.user.userId;
+
+  console.log({feedbackText , rating , userId , userRouteId});
+
+  if (!userId || !rating || !userRouteId) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const feedbackFill = await feedback.create({
+      feedbackText: feedbackText,
+      rating: rating,
+      userId: userId,
+      userRouteId: userRouteId
+    });
+
+    console.log(feedbackFill);
+
+    return res.status(201).json({ message: "Feedback submitted successfully"});
+  } catch (error) {
+    console.error("Error submitting feedback:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
 
 
 
 module.exports = {
   handleSearchRides,
-  handleGetRequestedRideDetails,
-  handlePostCompletedRides,
-  handlePostMatchRidesInDatabase
+  handlePostMatchRidesInDatabase,
+  handleToGetUserRideHistory,
+  handleToMarkRideAsCompleted,
+  handleSubmitFeedback
 };

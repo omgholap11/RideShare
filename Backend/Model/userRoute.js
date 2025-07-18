@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const userRouteSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId, // Corrected type
-      ref: "user", // Reference to the "User" collection
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
       required: true
     },
     rideId: {
-      type: mongoose.Schema.Types.ObjectId, // Reference to the "Driver" collection
+      type: mongoose.Schema.Types.ObjectId,
       ref: "route",
       required: true
     },
@@ -21,21 +21,28 @@ const userRouteSchema = new mongoose.Schema(
       required: true
     },
     time: {
-      type: String, // Use a string for formatted time (or Date if using timestamps)
+      type: String,
       required: true
     },
     status: {
       type: String,
-      enum: ["pending", "accepted", "declined", "completed","requested"], // Possible ride statuses
+      enum: ["pending", "accepted", "declined", "completed", "requested"],
       default: "pending"
     },
-    rideCost : {
-      type:Number,
-      required : true,
+    rideCost: {
+      type: Number,
+      required: true
     },
-    date : {
-      type : String,
-      required : true,
+    date: {
+      type: String,
+      required: true
+    },
+
+    // 👇 TTL-enabled field
+    declinedAt: {
+      type: Date,
+      default: null,
+      expires: 86400
     }
   },
   { timestamps: true }

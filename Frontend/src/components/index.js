@@ -5,7 +5,7 @@ import BookRidePage from "./BookRidePage";
 import Cards from "./Cards";
 import ContactUs from "./ContactUs";
 import CounterCards from "./CounterCards";
-import DriverDashboard from "./DriverDashboard";
+import DriverProfile from "./DriverProfile";
 import DriverFeedbackForm from "./DriverFeedbackForm";
 import DriverLogin from "./DriverLogIn";
 import DriverSignUp from "./DriverSignUp";
@@ -24,13 +24,14 @@ import RideShareFaq from "./RideshareFaq";
 import SafetyPage from "./SafetyPage";
 import SupportPage from "./SupportPage";
 import ThankingUser from "./ThankingUser";
-import UserNotification from "./UserNotification";
+import UserRideHistory from "./UserRideHistory";
 import UserSignUpPage from "./UserSignUpPage";
 import UserLoginPage from "./UserLogInPage";
 import Unauthorized from "./Unauthorized";
+import UserProfile from "./UserProfile";
 
-export {Navbar,BookRide,BookRidePage,Cards , ContactUs,CounterCards,DriverDashboard,DriverLogin,DriverSignUp,Footer,
+export {Navbar,BookRide,BookRidePage,Cards , ContactUs,CounterCards,DriverProfile,DriverLogin,DriverSignUp,Footer,
 HomeMain,Layout,LogInOptions,OfferRide,RegistrationOptions,RequestedRides,RideBookSuccess,RideDetails,RidePlaced,Unauthorized,
-RideResults,RideShareFaq,SafetyPage,SupportPage,ThankingUser,UserNotification ,UserSignUpPage,UserLoginPage , DriverFeedbackForm , AboutUs};
+RideResults,RideShareFaq,SafetyPage,SupportPage,ThankingUser,UserRideHistory ,UserSignUpPage,UserLoginPage , DriverFeedbackForm , AboutUs , UserProfile};
 
 

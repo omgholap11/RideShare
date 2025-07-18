@@ -1,204 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import { User, Bell, CircleUser , Bike } from "lucide-react";
-// import { useNavigate } from "react-router-dom";
-// import { jwtDecode } from "jwt-decode";
-// import {useSelector} from "react-redux"
-
-// function Navbar() {
-
-//   const navigate = useNavigate();
-//   const [role , setRole] = useState(null);
-//   const [userid , setUserid] = useState(null);
-//   const {userType , userId} = useSelector((state)=>state.auth);
-//   useEffect(()=>{
-//     setUserid(userId);
-//     setRole(userType);
-//     console.log(userId , userType);
-//   },[userType , userId])
-
-//     const fetchUserRole = async () => {
-//       try {
-//         const response = await fetch("http://localhost:5001/user/get-token", {
-//           method: "GET",
-//           credentials: "include", // Ensures cookies are sent
-//         });
-
-//         if (!response.ok) {
-//           console.error("Token fetch failed:", response.statusText);
-//           return { role: null, userid: null };
-//         }
-
-//         const data = await response.json();
-//         console.log("Token Response:", data); // Debugging
-//         return { role: data.role, userid: data.userid }; // "driver" | "user" | null
-//       } catch (error) {
-//         console.error("Error fetching user role:", error);
-//         return { role: null, userid: null };
-//       }
-//     };
-
-//     useEffect(() => {
-//     const checkUserRole = async () => {
-//       const { role, userid } = await fetchUserRole();
-//       setRole(role);
-//       setUserid(userid);
-//     };
-
-//     checkUserRole();
-//   }, []);
-
-//   const navigateToUserProfile = async ()=>{
-//         console.log(userid);
-//         try{
-//           const response = await fetch("http://localhost:5001/driver/dashboard",
-//            { method : "POST",
-//             headers: { "Content-Type": "application/json" },
-//              body : JSON.stringify({userid}),
-//            });
-
-//            if(!response.ok)
-//            {
-//               console.log("Error while getting user details from Backend!!");
-//            }
-
-//            const data = await response.json();
-//            console.log(data);
-//            navigate("/dashboard" , {state : data});
-//         }
-//         catch(error)
-//         {
-//           console.log("Error while getting user info!!",error);
-//         }
-//       }
-
-//       const navigateAboutUs = ()=>{
-//         navigate("/aboutus");
-//       }
-//       const navigateContactUs = ()=>{
-//         navigate("/contactus");
-//       }
-
-//       const navigateToRequestedRides = async()=>{
-//         // const {userid} = await fetchUserRole();
-//             console.log(userId);
-//             try{
-//               const response = await fetch("http://localhost:5001/offer/getrequestedrides",
-//                { method : "POST",
-//                 headers: { "Content-Type": "application/json" },
-//                  body : JSON.stringify({userId}),
-//                });
-
-//                if(!response.ok)
-//                {
-//                   console.log("Error while getting user details from Backend!!");
-//                }
-
-//                const data = await response.json();
-//                console.log(data);
-//                navigate("/requestedrides" , {state : {matchedUserRoutes  : data.matchedUserRoutes , matchedDriverRouteId : data.matchedDriverRouteId}});
-//             }
-//             catch(error)
-//             {
-//               console.log("Error while getting user info!!",error);
-//             }
-//           }
-
-//           const navigateToUserRideHistory = async ()=>{
-//             // const {userid} = await fetchUserRole();
-//             console.log(userId);
-//             try{
-//               const response = await fetch("http://localhost:5001/book/getrequestedridedetails",
-//                 { method : "POST",
-//                   headers: { "Content-Type": "application/json" },
-//                    body : JSON.stringify({userId}),
-//                  });
-
-//                  if(!response.ok)
-//                  {
-//                     console.log("Error occured in backend while fetching user requested ride details!!");
-//                  }
-
-//                  const data = await response.json();
-//                  const requests = data.requests;
-//                  console.log(data.requests);
-//                  navigate("/usernotifications",{ state : {requests}});
-
-//             }
-//            catch(error)
-//            {
-//             console.log("Error occured while fetching users requested rides status and details............");
-//            }
-//           }
-
-//   const navigateToRegisterPage = () => navigate("/registrationoptions");
-//   const navigateToHomePage = () => navigate("/");
-//   // const navigateToUserProfile = () => navigate("/profile");
-//   // const navigateToRequestedRides = () => navigate("/requestedrides");
-
-//   return (
-//     <header className="bg-gray-200 shadow-xl py-4 sticky top-0 z-50">
-//       <div className="container mx-auto px-4 flex justify-between items-center max-w-6xl">
-//         {/* Logo */}
-//         <div className="flex items-center space-x-3 group">
-//           <div className="h-12 w-12 bg-black rounded-full flex items-center justify-center
-//             transform transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
-//             <Bike className="text-white font-bold text-lg"/>
-//           </div>
-//           <button onClick={navigateToHomePage} className="text-2xl font-extrabold text-gray-800 tracking-tight
-//             transition-colors duration-300 group-hover:text-blue-600">
-//             RideShare
-//           </button>
-//         </div>
-
-//         {/* Navigation Links */}
-//         <nav className="flex items-center space-x-6">
-//           <div className="flex items-center space-x-6 mr-4">
-//             <button onClick={navigateAboutUs} className="text-gray-800 hover:text-black transition-colors duration-300 relative group">
-//               About Us
-//               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-//             </button>
-//             <button onClick={navigateContactUs} className="text-gray-800 hover:text-black transition-colors duration-300 relative group">
-//               Contact Us
-//               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-//             </button>
-//           </div>
-
-//           {/* User & Driver UI */}
-//           {role === "driver" && (
-//             <div className="flex items-center space-x-4">
-//               <Bell onClick={navigateToRequestedRides} className="w-7 h-7 text-gray-600 hover:text-black transition cursor-pointer transform hover:scale-110" />
-//               <CircleUser onClick={navigateToUserProfile} className="w-12 h-12 text-gray-600 hover:text-black transition-colors cursor-pointer" />
-//             </div>
-//           )}
-
-//           {role === "user" && (
-//             <div className="flex items-center space-x-4">
-//               <button onClick={navigateToUserRideHistory} className="px-4 py-2 bg-black text-white rounded hover:bg-black transition">
-//                 Notifications
-//               </button>
-//             </div>
-//           )}
-
-//           {/* Unauthenticated User UI */}
-//           {role === null && (
-//             <button className="px-5 py-2.5 bg-black text-white rounded-lg
-//                 hover:bg-black transition flex items-center space-x-2
-//                 shadow-md hover:shadow-lg transform hover:scale-105
-//                 active:scale-95 duration-300"
-//               onClick={navigateToRegisterPage}
-//             >
-//               <User className="w-5 h-5" />
-//               <span>Register</span>
-//             </button>
-//           )}
-//         </nav>
-//       </div>
-//     </header>
-//   );
-// }
-
-// export default Navbar;
-
 import React, { useState, useEffect } from "react";
 import {
   User,
@@ -267,41 +66,8 @@ function Navbar() {
     checkUserRole();
   }, []);
 
-  const navigateToUserProfile = () => navigate("/profile");
   const navigateAboutUs = () => navigate("/aboutus");
   const navigateContactUs = () => navigate("/contactus");
-  const navigateToRideDetails = ()=>{
-    navigate("/requestedrides");
-  }
-  const navigateToUserRideHistory = async () => {
-    const { userid } = await fetchUserRole();
-    console.log(userid);
-    try {
-      const response = await fetch(
-        "http://localhost:5001/book/getrequestedridedetails",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userid }),
-        }
-      );
-
-      if (!response.ok) {
-        console.log(
-          "Error occured in backend while fetching user requested ride details!!"
-        );
-      }
-
-      const data = await response.json();
-      const requests = data.requests;
-      console.log(data.requests);
-      navigate("/usernotifications", { state: { requests } });
-    } catch (error) {
-      console.log(
-        "Error occured while fetching users requested rides status and details............"
-      );
-    }
-  };
 
   const navigateToDriverProfile = async () => {
     console.log(userid);
@@ -318,12 +84,14 @@ function Navbar() {
 
       const data = await response.json();
       console.log(data);
-      navigate("/dashboard", { state: data });
+      navigate("/driverprofile", { state: data });
     } catch (error) {
       console.log("Error while getting user info!!", error);
     }
   };
 
+
+  const navigateToUserProfile = ()=> navigate("/userprofile");
   const navigateToRegisterOptionsPagePage = () => navigate("/registrationoptions");
   const navigateToLogInOptionsPage = ()=> navigate("/loginoptions");
   const navigateToHomePage = () => navigate("/");
@@ -331,7 +99,8 @@ function Navbar() {
   const navigateToOfferRide = () => navigate("/offer");
   const navigateToSupport = () => navigate("/support");
   const navigateToSafety = () => navigate("/safety");
-  const navigateToRideHistory = () => navigate("/");
+  const navigateToRideHistory = () => navigate("/userridehistory");
+  const navigateToRideDetails = () => navigate("/requestedrides");
   const handlerToLogOutUser = async () => {
     try {
       const response = await fetch("http://localhost:5001/user/logout", {

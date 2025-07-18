@@ -224,6 +224,7 @@ const handleEnterDeclinedRides = async (req, res) => {
 
     const userRides = await userRoute.findByIdAndUpdate(userRouteId, {
       status: "declined",
+      declinedAt: new Date()
     });
 
     console.log(userRides);

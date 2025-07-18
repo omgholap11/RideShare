@@ -88,6 +88,22 @@ async function handleUserLogOut(req, res) {
   return res.status(200).cookie('token' ,token , { httpOnly: true , secure : false , sameSite : 'Lax' , maxAge: 2 * 60 * 60 * 1000,} ).json({msg : "Sign In succedded"});
 }
 
+async function handleToGetUserDetails(req, res) {
+  const userId = req.user.userId;
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
+  try {
+    const userDetails = await  user.findById(userId, { password: 0, __v: 0 });
+    if (!userDetails) {     
+      return res.status(404).json({ error: "User not found" });
+    }
 
+    return res.status(200).json({ userDetails });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
-  module.exports = {handleUserLogin,handleUserSignUp ,handleUserLogOut};
+module.exports = {handleUserLogin,handleUserSignUp ,handleUserLogOut,handleToGetUserDetails};
