@@ -91,7 +91,7 @@ console.log(created);
   console.log(user);
   console.log("Token of user: ",user.token);
   const token = user.token ;
-  return res.status(200).cookie('token' ,token , { httpOnly: true , secure : false , sameSite : 'Lax' , maxAge: 2 * 60 * 60 * 1000,} ).json({msg : "Sign In succedded"});
+  return res.status(200).cookie('token' ,token , { httpOnly: true , secure : false , sameSite : 'Lax' , maxAge: 24 * 60 * 60 * 1000 ,} ).json({msg : "Sign In succedded"});
 }
 
 async function handleDriverLogOut(req, res) {
@@ -128,5 +128,29 @@ async function handleSendDriverDetails(req,res){
     image : driverInfo.image , vehicleName : driverInfo.vehicleName , vehicleNumber : driverInfo.vehicleNumber})
 }
 
+async function handleToGetDriverDetails(req, res) {
+  const driverId = req.user.userId;
+  console.log("Request to get driver details received for ID:", driverId);
 
-module.exports = {handleDriverSignUp,handleDriverLogin,handleSendDriverDetails , handleDriverLogOut};
+  try {
+    const driverInfo = await driver.findById(driverId);
+    if (!driverInfo) {
+      console.log("Driver does not exist in database!");
+      return res.status(404).json({ msg: "Failed to fetch user details" });
+    }
+
+
+  
+    return res.status(200).json({
+      name: `${driverInfo.firstName} ${driverInfo.lastName}`,
+      image: driverInfo.image,
+      vehicleName: driverInfo.vehicleName,
+      vehicleNumber: driverInfo.vehicleNumber,
+    });
+  } catch (error) {
+    console.error("Error fetching driver details:", error);
+    return res.status(500).json({ msg: "failed", error: "Server error." });
+  }
+} 
+
+module.exports = {handleDriverSignUp,handleDriverLogin,handleSendDriverDetails , handleDriverLogOut , handleToGetDriverDetails};

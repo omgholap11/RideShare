@@ -1,7 +1,7 @@
 import Navbar from "./Navbar";
 import AboutUs from "./AboutUs";
 import BookRide from "./BookRide";
-import BookRidePage from "./BookRidePage";
+import SearchRidePage from "./SearchRidePage";
 import Cards from "./Cards";
 import ContactUs from "./ContactUs";
 import CounterCards from "./CounterCards";
@@ -15,7 +15,7 @@ import Layout from "./Layout";
 import LogInOptions from "./LogInOptions";
 import OfferRide from "./OfferRide";
 import RegistrationOptions from "./RegistrationOptions";
-import RequestedRides from "./RequestedRides";
+import DriverRideHistory from "./DriverRideHistory";
 import RideBookSuccess from "./RideBookSuccess";
 import RideDetails from "./RideDetails";
 import RidePlaced from "./RidePlaced";
@@ -30,8 +30,8 @@ import UserLoginPage from "./UserLogInPage";
 import Unauthorized from "./Unauthorized";
 import UserProfile from "./UserProfile";
 
-export {Navbar,BookRide,BookRidePage,Cards , ContactUs,CounterCards,DriverProfile,DriverLogin,DriverSignUp,Footer,
-HomeMain,Layout,LogInOptions,OfferRide,RegistrationOptions,RequestedRides,RideBookSuccess,RideDetails,RidePlaced,Unauthorized,
+export {Navbar,BookRide,SearchRidePage,Cards , ContactUs,CounterCards,DriverProfile,DriverLogin,DriverSignUp,Footer,
+HomeMain,Layout,LogInOptions,OfferRide,RegistrationOptions,DriverRideHistory,RideBookSuccess,RideDetails,RidePlaced,Unauthorized,
 RideResults,RideShareFaq,SafetyPage,SupportPage,ThankingUser,UserRideHistory ,UserSignUpPage,UserLoginPage , DriverFeedbackForm , AboutUs , UserProfile};
 
 

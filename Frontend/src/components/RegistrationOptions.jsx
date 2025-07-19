@@ -13,8 +13,10 @@ const RegistrationOptions = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-indigo-100 py-12 px-4">
-      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+     <div className="min-h-screen bg-indigo-100 pt-20 px-4"> 
+    {/* Inner div: Max width, full width on small screens, centered horizontally with mx-auto. */}
+    {/* Its height will now be determined by its content, not by stretching. */}
+    <div className="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden mx-auto">
         {/* Decorative elements */}
         
         

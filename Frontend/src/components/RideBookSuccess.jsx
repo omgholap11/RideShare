@@ -13,10 +13,9 @@ const RideBookSuccess = () => {
     startLocation: ride.rideStart,
     endLocation: ride.rideEnd,
     price: ride.rideCost,
-    image : "gholaprohit75@gmail.com.jpg",
-    estimatedTime: 45,
-    rating: 4.7
+    image : ride.driverImage || "https://via.placeholder.com/150", 
   };
+  console.log("Rider Details:", riderDetails);
 
   return (
     <div className="min-h-screen bg-indigo-100 flex items-center justify-center p-4">

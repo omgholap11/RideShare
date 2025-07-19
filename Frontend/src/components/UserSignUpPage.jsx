@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, User, Smartphone, Mail } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const UserSignUpPage = () => {
@@ -14,7 +14,6 @@ const UserSignUpPage = () => {
   });
 
   const [errors, setErrors] = useState({});
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -93,7 +92,7 @@ const UserSignUpPage = () => {
           const data = await response.json();
           // Handle successful signup (e.g., redirect to login, show success message)
           toast.success('Signup Successfull!!');
-          navigate("/userlogin");
+          navigate("/userlogin" , {state : {from : 'usersignup' }});
 
         } else {
 
@@ -110,8 +109,8 @@ const UserSignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-2xl rounded-2xl max-w-md w-full p-8 space-y-6">
+    <div className="min-h-screen bg-indigo-100 pt-4 p-4">
+      <div className="bg-white shadow-2xl rounded-2xl max-w-md w-full mx-auto p-8 space-y-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-800">Create Account</h2>
           <p className="text-gray-600 mt-2">Sign up to get started</p>

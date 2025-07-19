@@ -3,6 +3,7 @@ import { Lock, User, Smartphone , Check , AlertCircle } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../Features/authSlice";
 import { toast } from "react-toastify";
+import { useLocation , useNavigate} from "react-router-dom";
 const UserLoginPage = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -10,6 +11,11 @@ const UserLoginPage = () => {
     password: "",
   });
 
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+  const previousPath = (location.state?.from === 'usersignup'); 
+  const previousPath2 = (location.state?.from === 'loginoptions');
   const [errors, setErrors] = useState({});
 
   const [login, setlogin] = useState(0);
@@ -69,8 +75,19 @@ const UserLoginPage = () => {
           setlogin(1);
 
           toast.success("SignIn Successful");
-          // alert('Login Successful!');
-          // Navigate("/rideresults");
+
+          if(previousPath)
+          {
+            navigate(-3);
+          }
+          else if(previousPath2)
+          {
+            navigate(-2);
+          }
+          else{
+            navigate(-1);
+          }
+        
         } else {
           // Handle login failure
           setlogin(2);
@@ -87,8 +104,8 @@ const UserLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-2xl rounded-2xl max-w-sm w-full p-8 space-y-6">
+    <div className="min-h-screen bg-indigo-100 pt-20">
+      <div className="bg-white shadow-2xl rounded-2xl max-w-sm w-full mx-auto p-8 space-y-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-800">User Login</h2>
           <p className="text-gray-600 mt-2">
@@ -165,34 +182,6 @@ const UserLoginPage = () => {
             Login
           </button>
         </form>
-
-        {/* {login === 1 && (
-          <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-md shadow-md flex items-center">
-            <div className="flex-shrink-0">
-              <Check className="h-6 w-6 text-green-500" />
-            </div>
-            <div className="ml-3">
-              <p className="text-green-800 font-medium">Login Successful!</p>
-              <p className="text-green-600 text-sm mt-1">
-                You've been securely logged into your account.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {login === 2 && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md shadow-md flex items-center">
-            <div className="flex-shrink-0">
-              <AlertCircle className="h-6 w-6 text-red-500" />
-            </div>
-            <div className="ml-3">
-              <p className="text-red-800 font-medium">Login Failed</p>
-              <p className="text-red-600 text-sm mt-1">
-                Please check your password or mobile number and try again.
-              </p>
-            </div>
-          </div>
-        )} */}
 
         {/* Signup Option */}
         <div className="text-center">

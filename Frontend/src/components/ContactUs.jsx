@@ -29,7 +29,7 @@ const ContactUs = () => {
   };
 
   return (
-    <section className="bg-indigo-100 py-12 px-4">
+    <section className="bg-indigo-100 py-4 px-4">
   <div className="max-w-5xl mx-auto">
     <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-black">
       Contact Us

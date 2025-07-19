@@ -106,7 +106,7 @@ function SafetyPage() {
       </div>
 
       {/* Header Section */}
-      <div className="relative z-10 pt-16 pb-8">
+      <div className="relative z-10 pt-8 pb-4">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-200/50 backdrop-blur-sm mb-6">
@@ -133,7 +133,7 @@ function SafetyPage() {
       </div>
 
       {/* Safety Features Grid */}
-      <div className="relative z-10 py-16">
+      <div className="relative z-10 py-8">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-slate-800 mb-4">Built-in Safety Features</h2>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Clock, MapPin, User, Phone, CheckCircle, XCircle, Car, ChevronRight, ArrowLeft } from 'lucide-react';
 import axios from 'axios'; // Make sure to import axios
 
-const RequestedRides = () => {
+const DriverRideHistory = () => {
   const [ridesChanges, setRidesChanges] = useState(true);
   const [rides, setRides] = useState([]);
   const [showAcceptPopup, setShowAcceptPopup] = useState(false);
@@ -420,7 +420,7 @@ const RequestedRides = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-indigo-100 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-4">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
@@ -534,4 +534,4 @@ const RequestedRides = () => {
   );
 };
 
-export default RequestedRides;
+export default DriverRideHistory;

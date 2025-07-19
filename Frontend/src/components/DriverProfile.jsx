@@ -18,6 +18,10 @@ const DriverProfile = () => {
     navigate("/offer");
   }
 
+  const navigateToRideHistoryPage = () => {
+    navigate("/driverridehistory");
+  }
+
   // Sample data focused on personal ride-sharing metrics
   const userInfo = {
     name: name || "MotoShare Driver", // Fallback for name if not passed
@@ -260,7 +264,9 @@ const DriverProfile = () => {
                 <Bike className="h-5 w-5 mr-2" />
                 Offer a New Ride
               </button>
-              <button className="w-full flex items-center justify-center px-6 py-3 bg-white border-2 border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 transition-all duration-300 shadow-sm transform hover:scale-[1.01]">
+              <button 
+              onClick={navigateToRideHistoryPage}
+              className="w-full flex items-center justify-center px-6 py-3 bg-white border-2 border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 transition-all duration-300 shadow-sm transform hover:scale-[1.01]">
                 <Clock className="h-5 w-5 mr-2" />
                 View Ride History
               </button>

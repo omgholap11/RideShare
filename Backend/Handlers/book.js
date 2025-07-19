@@ -65,6 +65,7 @@ async function handleSearchRides(req, res) {
             rideStartTime: ride.rideStartTime,
             driverName: `${driverDetails.firstName} ${driverDetails.lastName}`,
             driverNumber: driverDetails.mobileNumber,
+            driverImage : driverDetails.image,
             vehicleName: driverDetails.vehicleName,
             rideId: ride._id,
             rideCost: rideCost,

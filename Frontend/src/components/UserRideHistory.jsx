@@ -121,7 +121,6 @@ const UserRideHistory = () => {
         setShowCompleteRidePopup(false);
         setShowFeedbackForm(true); 
         setRidesChanges(!ridesChanges); 
-        setSelectedRideId(null); 
       } else {
         console.error("Failed to mark ride as completed");
         alert("Failed to mark ride as completed. Please try again.");
@@ -329,8 +328,7 @@ const UserRideHistory = () => {
           {isUpcoming &&
             (ride.status === "accepted" ||
               ride.status === "ongoing" ||
-              ride.status == "declined" ||
-              ride.status === "requested" ) &&
+              ride.status == "declined"  ) &&
             ride.matchedDriver && (
               <div>
                 <div className="flex items-center gap-3 mb-4">

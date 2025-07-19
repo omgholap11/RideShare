@@ -85,7 +85,7 @@ async function handleUserLogOut(req, res) {
 
   console.log("Token of user: ",User.token);
   const token = User.token ;
-  return res.status(200).cookie('token' ,token , { httpOnly: true , secure : false , sameSite : 'Lax' , maxAge: 2 * 60 * 60 * 1000,} ).json({msg : "Sign In succedded"});
+  return res.status(200).cookie('token' ,token , { httpOnly: true , secure : false , sameSite : 'Lax' , maxAge: 24 * 60 * 60 * 1000 ,} ).json({msg : "Sign In succedded"});
 }
 
 async function handleToGetUserDetails(req, res) {

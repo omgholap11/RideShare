@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 function Navbar() {
   const [role, setRole] = useState(null);
   const [userid, setUserid] = useState(null);
@@ -72,18 +73,14 @@ function Navbar() {
   const navigateToDriverProfile = async () => {
     console.log(userid);
     try {
-      const response = await fetch("http://localhost:5001/driver/dashboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userid }),
+      const response = await axios.get("http://localhost:5001/driver/profile", {
+        withCredentials: true,
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         console.log("Error while getting user details from Backend!!");
       }
-
-      const data = await response.json();
-      console.log(data);
+      const data = response.data;
       navigate("/driverprofile", { state: data });
     } catch (error) {
       console.log("Error while getting user info!!", error);
@@ -95,12 +92,12 @@ function Navbar() {
   const navigateToRegisterOptionsPagePage = () => navigate("/registrationoptions");
   const navigateToLogInOptionsPage = ()=> navigate("/loginoptions");
   const navigateToHomePage = () => navigate("/");
-  const navigateToBookRide = () => navigate("/book");
+  const navigateToSearchRide = () => navigate("/searchride");
   const navigateToOfferRide = () => navigate("/offer");
   const navigateToSupport = () => navigate("/support");
   const navigateToSafety = () => navigate("/safety");
   const navigateToRideHistory = () => navigate("/userridehistory");
-  const navigateToRideDetails = () => navigate("/requestedrides");
+  const navigateToRideDetails = () => navigate("/driverridehistory");
   const handlerToLogOutUser = async () => {
     try {
       const response = await fetch("http://localhost:5001/user/logout", {
@@ -186,7 +183,7 @@ function Navbar() {
                   </p>
                 </div>
                 <button
-                  onClick={navigateToBookRide}
+                  onClick={navigateToSearchRide}
                   className="w-full px-4 py-3 text-left hover:bg-indigo-200 transition-colors duration-200 flex items-center space-x-3"
                 >
                   <Car className="w-5 h-5 text-indigo-600" />
@@ -397,7 +394,7 @@ function Navbar() {
                 Services
               </p>
               <button
-                onClick={navigateToBookRide}
+                onClick={navigateToSearchRide}
                 className="w-full text-left px-4 py-2 text-slate-700 hover:bg-indigo-50 rounded-lg transition-colors duration-200"
               >
                 Book a Ride

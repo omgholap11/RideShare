@@ -12,20 +12,26 @@ import {
   Users,
   Shield,
   MessageCircle,
-  Navigation
+  Navigation,
+  CheckCircle, // Added for confirmation icon
+  XCircle // Added for cancel icon
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; // useState is needed for the popup
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const RideDetails = () => {
 
-const location = useLocation();
-const navigate = useNavigate();
-const {ride , userStartLocation , userEndLocation , date , time} = location.state;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const {ride , userStartLocation , userEndLocation , date , time} = location.state;
+
+  // State for controlling the booking confirmation popup visibility
+  const [showBookingConfirmation, setShowBookingConfirmation] = useState(false);
 
   console.log("Ride details data:", { ride, userStartLocation, userEndLocation, date, time });
 
+  // Original handleBookRide logic remains untouched
   const handleBookRide = async () => {
     let errorHandled = false;
     try {
@@ -51,16 +57,18 @@ const {ride , userStartLocation , userEndLocation , date , time} = location.stat
       if (response.ok) {
         console.log("Ride booked successfully!");
         toast.success("Ride Booked Successfully!");
+        // Close popup after successful booking
+        setShowBookingConfirmation(false); 
         setTimeout(() => {
           navigate("/ridebooksuccess", {
             state: { ride, userStartLocation, userEndLocation, date, time },
           });
-        }, 300); // Give a slight delay after toast
+        }, 300); 
       } 
       else 
       {
-         toast.error("Error while Booking Ride!");
-         errorHandled = true;
+          toast.error("Error while Booking Ride!");
+          errorHandled = true;
       }
 
     } catch (error) {
@@ -86,6 +94,50 @@ const {ride , userStartLocation , userEndLocation , date , time} = location.stat
       window.location.href = `sms:${ride.driverNumber}`;
     }
   };
+
+  // Confirmation Pop-up Component
+  const BookingConfirmationPopup = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-auto transform scale-95 animate-scaleIn">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Bike className="w-8 h-8 text-indigo-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Confirm Ride Booking</h3>
+          <p className="text-gray-600 text-base">
+            Are you sure you want to book this ride for <span className="font-semibold text-indigo-700">₹{ride.rideCost}</span>?
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            You will be notified once the driver accepts your request.
+          </p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={() => setShowBookingConfirmation(false)} // Cancel action
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl 
+                       bg-gray-200 text-gray-800 font-semibold 
+                       hover:bg-gray-300 transition-all duration-200"
+          >
+            <XCircle size={18} />
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              handleBookRide(); // Confirm action - calls original booking logic
+            }}
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl 
+                       bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold 
+                       hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-md"
+          >
+            <CheckCircle size={18} />
+            Confirm Booking
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
 
   if (!ride) {
     return (
@@ -141,8 +193,12 @@ const {ride , userStartLocation , userEndLocation , date , time} = location.stat
               
               <div className="flex items-start space-x-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="w-8 h-8 text-indigo-600" />
+                  <img 
+                    src={ride.driverImage || "https://via.placeholder.com/64"}
+                    alt ="Driver Avatar"
+                    className="w-8 h-8 text-indigo-600" />
                 </div>
+                  {console.log("Driver Image:", ride.driverImage)}
                 
                 <div className="flex-grow">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">{ride.driverName}</h3>
@@ -152,14 +208,9 @@ const {ride , userStartLocation , userEndLocation , date , time} = location.stat
                       <Phone className="w-4 h-4 mr-2" />
                       <span>{ride.driverNumber}</span>
                     </div>
-                    
-                    <div className="flex items-center text-gray-600">
-                      <Star className="w-4 h-4 mr-2 fill-yellow-400 text-yellow-400" />
-                      <span>4.8 (120 rides)</span>
-                    </div>
                   </div>
                   
-                  {/* <div className="flex gap-3 mt-4">
+                  <div className="flex gap-3 mt-4">
                     <button 
                       onClick={handleCallDriver}
                       className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors text-sm"
@@ -174,7 +225,7 @@ const {ride , userStartLocation , userEndLocation , date , time} = location.stat
                       <MessageCircle size={16} />
                       Message
                     </button>
-                  </div> */}
+                  </div>
                 </div>
               </div>
             </div>
@@ -271,7 +322,7 @@ const {ride , userStartLocation , userEndLocation , date , time} = location.stat
               </div>
               
               <button 
-                onClick={handleBookRide}
+                onClick={() => setShowBookingConfirmation(true)} // Open confirmation popup instead of direct booking
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
               >
                 Book This Ride
@@ -290,6 +341,9 @@ const {ride , userStartLocation , userEndLocation , date , time} = location.stat
           </div>
         </div>
       </div>
+
+      {/* Render the confirmation popup conditionally */}
+      {showBookingConfirmation && <BookingConfirmationPopup />}
     </div>
   );
 };

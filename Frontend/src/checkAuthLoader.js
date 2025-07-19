@@ -11,6 +11,7 @@ export const checkUserAuthLoader = async () => {
     });
 
     const role = res.data.role;
+    console.log("role in auth loader  ",res.data);
     if(role !== 'user')
     {
        throw new Response("Unauthorized", {

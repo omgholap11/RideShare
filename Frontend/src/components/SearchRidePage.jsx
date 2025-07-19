@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const OLA_MAPS_API_KEY = import.meta.env.VITE_OLA_MAPS_API_KEY;
 // console.log("ola map key: ",OLA_MAPS_API_KEY);
 
-const BookRidePage = () => {
+const SearchRidePage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     startLocation: '',
@@ -107,7 +107,7 @@ const BookRidePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-indigo-100 py-12">
+    <div className="min-h-screen bg-indigo-100 ">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-10">
@@ -313,4 +313,4 @@ const BookRidePage = () => {
   );
 };
 
-export default BookRidePage;
+export default SearchRidePage;

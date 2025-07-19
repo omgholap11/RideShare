@@ -8,7 +8,7 @@ import { store } from "./App/store.js";
 import {
   Navbar,
   BookRide,
-  BookRidePage,
+  SearchRidePage,
   Cards,
   ContactUs,
   DriverProfile,
@@ -19,7 +19,7 @@ import {
   LogInOptions,
   OfferRide,
   RegistrationOptions,
-  RequestedRides,
+  DriverRideHistory,
   RideBookSuccess,
   RideDetails,
   RidePlaced,
@@ -54,8 +54,8 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "book",
-        element: <BookRidePage />,
+        path: "searchride",
+        element: <SearchRidePage />,
       },
       {
         path: "signup",
@@ -85,8 +85,8 @@ const router = createBrowserRouter([
         element: <RideResults />,
       },
       {
-        path: "requestedrides",
-        element: <RequestedRides />,
+        path: "driverridehistory",
+        element: <DriverRideHistory />,
         loader: checkDriverAuthLoader,
       },
       {
@@ -139,7 +139,7 @@ const router = createBrowserRouter([
       {
         path: "ridedetails",
         element: <RideDetails />,
-        checkUserAuthLoader,
+        loader : checkUserAuthLoader,
       },
       {
         path: "loginoptions",
