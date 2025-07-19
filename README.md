@@ -2,9 +2,6 @@
 
 ## _Connecting Communities, One Smart Journey at a Time_
 
-![RideShare Demo Image Placeholder](https://via.placeholder.com/1200x600/6A0DAD/FFFFFF?text=Captivating+Screenshots+Coming+Soon)
-*(Placeholder: Replace this with high-quality screenshots or a GIF of your application in action)*
-
 ## ✨ Project Overview
 
 In today's urban landscape, many motorbike commuters travel individually, while public transport often faces overcrowding and inefficiencies. **RideShare** emerges as a revolutionary solution, a ride-sharing platform designed exclusively for individuals with motorbikes. Our core mission is to seamlessly connect riders who are already on a journey with passengers seeking a ride along their path, fostering a community of shared travel, reduced costs, and a greener environment.
