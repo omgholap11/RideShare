@@ -1,6 +1,9 @@
-# 🛵 RideShare - Your Ride, Your Way
+# 🏍️ RideShare - Your Ride, Your Way
 
 ## _Connecting Communities, One Smart Journey at a Time_
+
+![RideShare Demo Image Placeholder](https://via.placeholder.com/1200x600/6A0DAD/FFFFFF?text=Captivating+Screenshots+Coming+Soon)
+*(Placeholder: Replace this with high-quality screenshots or a GIF of your application in action)*
 
 ## ✨ Project Overview
 
@@ -47,6 +50,15 @@ We're not just another ride-sharing app; we're building a smarter way to commute
 * **bcrypt.js:** A library for hashing passwords securely.
 * **CORS:** Middleware to enable Cross-Origin Resource Sharing, allowing secure communication between frontend and backend.
 
+**Key APIs:**
+* **Ola Maps Autocomplete API:** For location suggestions and auto-completion during search.
+* **Ola Maps Geocoding API:** To convert addresses into geographical coordinates.
+* **Ola Maps Route Optimizer API:** To calculate optimal routes/paths between two points, factoring in multiple waypoints.
+* **Driving License APIs:** For real-time verification of driver credentials to enhance platform safety and trust.
+
+**Key Algorithms:**
+* **Intersection Algorithm:** The core logic for identifying optimal ride matches between a driver's published route and a passenger's desired partial route. This algorithm ensures efficient pooling and maximizes shared journeys.
+
 ## 🚀 Getting Started
 
 To get a local copy of RideShare up and running for development or testing, follow these steps.
@@ -71,14 +83,14 @@ Before you begin, ensure you have the following installed on your system:
     Navigate into the `Backend` directory, install dependencies, and configure environment variables.
     ```bash
     cd Backend
-    npm install 
+    npm install
     ```
     Create a `.env` file in the `Backend` directory (at the same level as `package.json`) and populate it with your environment variables:
     ```env
     MONGO_URI=your_mongodb_connection_string_from_atlas_or_local
     JWT_SECRET=a_strong_random_secret_key_for_jwt
     PORT=5001 # Or any other desired port for your backend API
-    # Add any other environment variables required by your backend (e.g., for Driving License API)
+    # Add any other environment variables required by your backend (e.g., for Driving License API keys)
     ```
     *(Hint: For `MONGO_URI`, you can set up a free tier cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) to get a connection string.)*
 
@@ -90,7 +102,7 @@ Before you begin, ensure you have the following installed on your system:
     ```
     Create a `.env` file in the `Frontend` directory (at the same level as `package.json`) and add your environment variables:
     ```env
-    REACT_APP_API_URL=http://localhost:5173 # Points to your local backend. Change to deployed URL for production.
+    REACT_APP_API_URL=http://localhost:5001 # This should point to your backend API's URL (local or deployed)
     # Add any other environment variables used by your React app
     ```
 
