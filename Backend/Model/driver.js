@@ -28,7 +28,6 @@ const driverSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      unique: true,
     },
     drivingLicenseNumber:{
       type : String,

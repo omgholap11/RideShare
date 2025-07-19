@@ -6,13 +6,9 @@ const { getCoords } = require("../APIs/geocoding.js");
 const { findIntersections } = require("../Computation/intersection.js");
 const userRoute = require("../Model/userRoute.js");
 const { getRouteDirections } = require("../APIs/olaPolyline.js");
-const {connectMongoDB} = require("../Controllers/connectMongoDB.js");
-const feedbackSchema = require("../Model/feedback.js");
 const feedback = require("../Model/feedback.js");
 require("dotenv").config();
-
-
-connectMongoDB(process.env.MONGO_URL);
+const { sendEmailToDriver } = require("../Computation/sendemail.js");
 
 async function handleSearchRides(req, res) {
   const { startLocation, endLocation, date, time } = req.body;
@@ -130,7 +126,30 @@ async function handlePostMatchRidesInDatabase(req, res) {
         },
         { new: true }
       );
+      
+      const driverId = routeDetails.driverId;
+      const Driver = await driver.findById(driverId);
+      const driverEmail = Driver.emailId;
+      console.log("Driver email: ", driverEmail);
+      
+      const userDetails = {
+        name: User.fullName,
+        phone : User.mobileNumber,
+        userStart : startLocation,
+        userEnd : endLocation,
+        userTime : time,
+        estimatedCost : rideCost,
+      }
 
+      const rideDetails = {
+        rideStart: routeDetails.source,
+        rideEnd: routeDetails.destination,
+        rideDate: routeDetails.date,
+        rideTime: routeDetails.rideStartTime,
+      }
+
+      sendEmailToDriver(driverEmail, userDetails, rideDetails);
+      console.log("Email sent to driver with ride details");
 
 console.log("matched user: ",ride);
   console.log(userRides);
