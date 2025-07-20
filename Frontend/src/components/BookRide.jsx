@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Phone, MapPin } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const BookRide = () => {
     const location = useLocation();
