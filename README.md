@@ -159,7 +159,7 @@ Feel free to open an issue first if you'd like to discuss a significant change o
 
 ## 📧 Contact
 
-[Om Gholap] - [iomgholap123@gmail.com](mailto:iomgholap123@gmail.com)
+Om Gholap - [iomgholap123@gmail.com](mailto:iomgholap123@gmail.com)
 
 Project Link: [https://github.com/omgholap11/RideShare](https://github.com/omgholap11/RideShare)
 
